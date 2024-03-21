@@ -27,7 +27,8 @@ public class Login{
 	private VBox newAccountPane, loginPane;
 	private Scene scene;
 	
-	public String firstName, lastName, dob;
+	public String firstName, lastName, dob, role;
+	
 	public Login() {
 		//creates new pane and new scene
 		loginUI = new BorderPane();
@@ -99,6 +100,7 @@ public class Login{
 		roleSelectCB2 = new ComboBox<String>();
 		roleSelectCB2.getItems().addAll("Patient", "Doctor", "Nurse");
 		roleSelectCB2.setValue("Select");
+		
 		
 		createAccountLabel.setFont(new Font("Comic Sans MS", 20));
 		createAccountLabel.setStyle("-fx-font-weight: bold");
@@ -180,7 +182,7 @@ public class Login{
 	}
 	
 	//function to switch scene
-	public Scene switchScene() {
+	public Scene getScene() {
 		return scene;
 	}
 	private class ButtonHandler implements EventHandler<ActionEvent>{
@@ -212,9 +214,9 @@ public class Login{
 						firstName = firstNameTF.getText();
 						lastName = lastNameTF.getText();
 						dob = dobTF.getText();
+						role = roleSelectCB2.getValue();
 						
-						createAccount acc = new createAccount(); //changes to account screen
-						acc.getInfo(firstName, lastName, dob);
+						createAccount acc = new createAccount(firstName, lastName, dob, role); //changes to account screen
 						Window newWindow = scene.getWindow();
 						if (newWindow instanceof Stage) {
 							Stage newStage = (Stage) newWindow;

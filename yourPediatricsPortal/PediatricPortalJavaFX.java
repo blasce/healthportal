@@ -17,7 +17,7 @@ public class PediatricPortalJavaFX extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		Login login = new Login();
-		Scene scene = login.switchScene();
+		Scene scene = login.getScene();
 		
 		primaryStage.setTitle("Your Pediatric Portal");
 		primaryStage.setScene(scene);

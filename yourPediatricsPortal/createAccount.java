@@ -16,14 +16,19 @@ import javafx.scene.layout.*;
 
 public class createAccount {
 	private Button something, logout;
-	private Label testing, titleLabel;
+	private Label titleLabel, passwordTitle;
+	private TextField passwordTF, reEnterTF, healthCareVeriTF;
 	private BorderPane newAccountUI;
 	private Scene accountScene;
-	private HBox middlePane;
+	private VBox middlePane;
 	private HBox topPane;
-	private String first, last, dob;
+	private String first, last, dob, role;
 	
-	public createAccount () {
+	public createAccount (String first, String last, String dob, String role) {
+		this.first = first;
+		this.last = last;
+		this.dob = dob;
+		this.role = role;
 		newAccountUI = new BorderPane();
 		accountScene = new Scene(newAccountUI, 1280,720);
 		top();
@@ -60,26 +65,39 @@ public class createAccount {
 		topPane.getChildren().add(titleLabel);
 		topPane.getChildren().add(logout);
 		
+		logout.setOnAction(new ButtonHandler());
 		newAccountUI.setTop(topPane);
 	}
 	 private void middle() {
-		 middlePane = new HBox();
+		 middlePane = new VBox();
+		 passwordTitle = new Label("Create a Password");
+		 passwordTF = new TextField("");
+		 passwordTF.setPromptText("Enter a password");
+		 reEnterTF = new TextField("");
+		 reEnterTF.setPromptText("Re-enter password");
+		 healthCareVeriTF = new TextField("");
+		 healthCareVeriTF.setPromptText("Enter verification code");
+		 
+		 
+		 //passwordTF,setPrompt("")
 		 newAccountUI.setCenter(middlePane);
 		 something = new Button("press!");
 		 
 		 
 		 
 		 middlePane.getChildren().add(something);
+		 middlePane.getChildren().add(passwordTitle);
+		 middlePane.getChildren().add(passwordTF);
+		 middlePane.getChildren().add(reEnterTF);
+		 if (role.equals("Doctor") || role.equals("Nurse")) {
+			 middlePane.getChildren().add(healthCareVeriTF);
+		 }
+	
 		 something.setOnAction(new ButtonHandler());
 		 
 	 }
 	
-	 //gets info from login page
-	 public void getInfo(String fn, String ln, String birthdate) {
-			this.first = fn;
-			this.last = ln;
-			this.dob = birthdate;
-	}
+
 	
 	private class ButtonHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
@@ -87,6 +105,16 @@ public class createAccount {
 			if (source == something) {
 				System.out.println("Welcome to your new account " + first + " " + last);
 				System.out.println("Your username will be: " + first.substring(0,1) + last+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10)); //username creation
+				System.out.println("You are a " + role);
+			} else if (source == logout) {
+				System.out.println("Logout pressed");
+				
+				Login backToLogin = new Login();
+				Window newWindow = accountScene.getWindow();
+				if (newWindow instanceof Stage) {
+					Stage newStage = (Stage) newWindow;
+					newStage.setScene(backToLogin.getScene());
+				}
 			}
 		}
 	}
