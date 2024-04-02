@@ -5,6 +5,7 @@ import javafx.stage.Window;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -30,7 +31,7 @@ public class createAccount {
 		this.dob = dob;
 		this.role = role;
 		newAccountUI = new BorderPane();
-		accountScene = new Scene(newAccountUI, 1280,720);
+		accountScene = new Scene(newAccountUI, 1280,730);
 		top();
 		middle();
 		
@@ -40,10 +41,10 @@ public class createAccount {
 		topPane = new HBox();
 		
 		ImageView image = new ImageView("https://cdn-icons-png.flaticon.com/256/3959/3959107.png");
-		image.setFitHeight(50);
-		image.setFitWidth(50);
+		image.setFitHeight(40);
+		image.setFitWidth(40);
 		titleLabel = new Label("YourPediatricsPortal", image);
-		titleLabel.setFont(new Font("Comic Sans MS", 24));
+		titleLabel.setFont(new Font("Comic Sans MS", 19));
 		titleLabel.setStyle("-fx-font-weight: bold");
 		titleLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		
@@ -77,21 +78,40 @@ public class createAccount {
 		 reEnterTF.setPromptText("Re-enter password");
 		 healthCareVeriTF = new TextField("");
 		 healthCareVeriTF.setPromptText("Enter verification code");
+		 something = new Button("Confirm Password");
 		 
+		 middlePane.setMargin(passwordTitle, new Insets(10,0,10,0));
+		 middlePane.setMargin(passwordTF, new Insets(5,10,10,10));
+		 middlePane.setMargin(reEnterTF, new Insets(5,10,10,10));
+		 middlePane.setMargin(healthCareVeriTF, new Insets(5,10,10,10));
+		 middlePane.setMargin(something, new Insets(10,0,0,0));
+		 middlePane.setAlignment(Pos.TOP_CENTER);
+			
+		 passwordTitle.setFont(new Font("Comic Sans MS", 20));
+		 passwordTitle.setStyle("-fx-font-weight: bold");
 		 
+		 String createAccLayout = "-fx-border-color: black;\n" +
+	                "-fx-border-insets: 1;\n" +
+	                "-fx-border-width: 2;\n" +
+	                "-fx-background-color: #9abaed;\n";
+		 middlePane.setStyle(createAccLayout);
+
+		 middlePane.setMaxWidth(400);
+		 middlePane.setMaxHeight(350);
+		 middlePane.setMinWidth(400);
+		 middlePane.setMinHeight(350);
 		 //passwordTF,setPrompt("")
 		 newAccountUI.setCenter(middlePane);
-		 something = new Button("press!");
 		 
 		 
 		 
-		 middlePane.getChildren().add(something);
 		 middlePane.getChildren().add(passwordTitle);
 		 middlePane.getChildren().add(passwordTF);
 		 middlePane.getChildren().add(reEnterTF);
 		 if (role.equals("Doctor") || role.equals("Nurse")) {
 			 middlePane.getChildren().add(healthCareVeriTF);
 		 }
+		 middlePane.getChildren().add(something);
 	
 		 something.setOnAction(new ButtonHandler());
 		 

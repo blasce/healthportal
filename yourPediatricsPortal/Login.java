@@ -14,6 +14,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import yourPediatricsPortal.DoctorView;
+import yourPediatricsPortal.NurseView;
 
 
 public class Login{
@@ -32,7 +34,7 @@ public class Login{
 	public Login() {
 		//creates new pane and new scene
 		loginUI = new BorderPane();
-		scene = new Scene(loginUI, 1280, 720);
+		scene = new Scene(loginUI, 1280, 730);
 		top();
 		middle();
 		
@@ -42,10 +44,10 @@ public class Login{
 	private void top() {
 		topPane = new HBox();
 		ImageView image = new ImageView("https://cdn-icons-png.flaticon.com/256/3959/3959107.png");
-		image.setFitHeight(50);
-		image.setFitWidth(50);
+		image.setFitHeight(40);
+		image.setFitWidth(40);
 		titleLabel = new Label("YourPediatricsPortal", image);
-		titleLabel.setFont(new Font("Comic Sans MS", 24));
+		titleLabel.setFont(new Font("Comic Sans MS", 19));
 		titleLabel.setStyle("-fx-font-weight: bold");
 		titleLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 	
@@ -57,7 +59,7 @@ public class Login{
                 "-fx-border-width: 1.5;\n" +
                 "-fx-background-color: #9abaed;\n";
 		topPane.setStyle(topPaneLayout);
-		topPane.setMargin(titleLabel, new Insets(10,10,10,10));
+		topPane.setMargin(titleLabel, new Insets(10,10,5,10));
 		
 		topPane.getChildren().add(titleLabel);
 		loginUI.setTop(topPane);
@@ -179,6 +181,8 @@ public class Login{
 		loginPane.getChildren().add(passwordTF);
 		loginPane.getChildren().add(roleSelectCB);
 		loginPane.getChildren().add(loginButton);
+		
+		loginButton.setOnAction(new ButtonHandler());
 	}
 	
 	//function to switch scene
@@ -188,47 +192,76 @@ public class Login{
 	private class ButtonHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
 			Object source = e.getSource();
-			try {
-				//exception error handling
-				if(firstNameTF.getText().equals("") || lastNameTF.getText().equals("") || dobTF.getText().equals("") || roleSelectCB2.getValue().equals("Select")) {
-					createError.setText("One or more of the boxes is empty");
-					createError.setTextFill(Color.RED);
-				}
-				else if(hasNumber(firstNameTF.getText()) || hasNumber(lastNameTF.getText())) {
-					createError.setText("First or last name entered incorrectly!");
-					createError.setTextFill(Color.RED);
-				}
-				else if(dobTF.getText().length() != 10|dobTF.getText().charAt(2) != '/' || dobTF.getText().charAt(5) != '/'){
-					createError.setText("Date of birth is not entered correctly. \nEnter in this format MM/DD/YYYY");
-					createError.setTextFill(Color.RED);
+			if (source == createAccountButton) {
+				try {
+					//exception error handling
+					if(firstNameTF.getText().equals("") || lastNameTF.getText().equals("") || dobTF.getText().equals("") || roleSelectCB2.getValue().equals("Select")) {
+						createError.setText("One or more of the boxes is empty");
+						createError.setTextFill(Color.RED);
+					}
+					else if(hasNumber(firstNameTF.getText()) || hasNumber(lastNameTF.getText())) {
+						createError.setText("First or last name entered incorrectly!");
+						createError.setTextFill(Color.RED);
+					}
+					else if(dobTF.getText().length() != 10|dobTF.getText().charAt(2) != '/' || dobTF.getText().charAt(5) != '/'){
+						createError.setText("Date of birth is not entered correctly. \nEnter in this format MM/DD/YYYY");
+						createError.setTextFill(Color.RED);
 
-				}
-				else if(hasLetter(dobTF.getText())) {
-					createError.setText("SDate of birth is not entered correctly.\nEnter in this format MM/DD/YYYY");
-					createError.setTextFill(Color.RED);
-				}
-				else { // switches to new page
-					if (source == createAccountButton) {
+					}
+					else if(hasLetter(dobTF.getText())) {
+						createError.setText("SDate of birth is not entered correctly.\nEnter in this format MM/DD/YYYY");
+						createError.setTextFill(Color.RED);
+					}
+					else { // switches to new page
 						System.out.println("Account will be created!");
-						
+							
 						firstName = firstNameTF.getText();
 						lastName = lastNameTF.getText();
 						dob = dobTF.getText();
 						role = roleSelectCB2.getValue();
-						
+							
 						createAccount acc = new createAccount(firstName, lastName, dob, role); //changes to account screen
 						Window newWindow = scene.getWindow();
 						if (newWindow instanceof Stage) {
 							Stage newStage = (Stage) newWindow;
 							newStage.setScene(acc.getScene());
 						}
+						
 					}
 				}
+				catch(Exception exception) {
+					System.out.println("Error");
+				}
+			} else if (source == loginButton) {
+				if (roleSelectCB.getValue().equals("Doctor")) {
+					System.out.println("doctor select");
+					DoctorView doctorUI = new DoctorView();
+					Window newWindow = scene.getWindow();
+					if (newWindow instanceof Stage) {
+						Stage newStage = (Stage) newWindow;
+						newStage.setScene(doctorUI.getScene());
+					}
+				} else if (roleSelectCB.getValue().equals("Nurse")) {
+					System.out.println("nurse select");
+					NurseView nurseUI = new NurseView();
+					Window newWindow = scene.getWindow();
+					if (newWindow instanceof Stage) {
+						Stage newStage = (Stage) newWindow;
+						newStage.setScene(nurseUI.getScene());
+					}
+					
+				} else if (roleSelectCB.getValue().equals("Patient")){
+					System.out.println("patient select");
+				} else {
+					System.out.println("error");
+				}
+				
+			} else {
+				System.out.print("Something weird happened");
 			}
-			catch(Exception exception) {
-				System.out.println("Error");
-			}
+			
 		}
+	
 	}
 	private boolean hasNumber(String s) { //checks if there is a number in a string
 		boolean num = false;
