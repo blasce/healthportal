@@ -19,9 +19,10 @@ public class createAccount {
 	private Button something, logout;
 	private Label titleLabel, passwordTitle;
 	private TextField passwordTF, reEnterTF, healthCareVeriTF;
+	private TextArea immunizationsTA, healthIssTA, medTA;
 	private BorderPane newAccountUI;
 	private Scene accountScene;
-	private VBox middlePane;
+	private VBox passwordPane;
 	private HBox topPane;
 	private String first, last, dob, role;
 	
@@ -49,8 +50,8 @@ public class createAccount {
 		titleLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		
 		ImageView imageLogout = new ImageView ("https://static-00.iconduck.com/assets.00/log-out-outline-icon-512x432-rbmppekf.png");
-		imageLogout.setFitHeight(30);
-		imageLogout.setFitWidth(30);
+		imageLogout.setFitHeight(20);
+		imageLogout.setFitWidth(20);
 		logout = new Button("",imageLogout);
 	
 		
@@ -60,8 +61,8 @@ public class createAccount {
                 "-fx-border-width: 1.5;\n" +
                 "-fx-background-color: #9abaed;\n";
 		topPane.setStyle(topPaneLayout);
-		topPane.setMargin(titleLabel, new Insets(10,10,10,0));
-		topPane.setMargin(logout, new Insets(15,0,0,890));
+		topPane.setMargin(titleLabel, new Insets(5,10,10,0));
+		topPane.setMargin(logout, new Insets(15,0,0,960));
 		
 		topPane.getChildren().add(titleLabel);
 		topPane.getChildren().add(logout);
@@ -69,8 +70,10 @@ public class createAccount {
 		logout.setOnAction(new ButtonHandler());
 		newAccountUI.setTop(topPane);
 	}
-	 private void middle() {
-		 middlePane = new VBox();
+	
+	
+	private void middle() {
+		 passwordPane = new VBox();
 		 passwordTitle = new Label("Create a Password");
 		 passwordTF = new TextField("");
 		 passwordTF.setPromptText("Enter a password");
@@ -80,12 +83,12 @@ public class createAccount {
 		 healthCareVeriTF.setPromptText("Enter verification code");
 		 something = new Button("Confirm Password");
 		 
-		 middlePane.setMargin(passwordTitle, new Insets(10,0,10,0));
-		 middlePane.setMargin(passwordTF, new Insets(5,10,10,10));
-		 middlePane.setMargin(reEnterTF, new Insets(5,10,10,10));
-		 middlePane.setMargin(healthCareVeriTF, new Insets(5,10,10,10));
-		 middlePane.setMargin(something, new Insets(10,0,0,0));
-		 middlePane.setAlignment(Pos.TOP_CENTER);
+		 passwordPane.setMargin(passwordTitle, new Insets(10,0,10,0));
+		 passwordPane.setMargin(passwordTF, new Insets(5,10,10,10));
+		 passwordPane.setMargin(reEnterTF, new Insets(5,10,10,10));
+		 passwordPane.setMargin(healthCareVeriTF, new Insets(5,10,10,10));
+		 passwordPane.setMargin(something, new Insets(10,0,0,0));
+		 passwordPane.setAlignment(Pos.TOP_CENTER);
 			
 		 passwordTitle.setFont(new Font("Comic Sans MS", 20));
 		 passwordTitle.setStyle("-fx-font-weight: bold");
@@ -94,29 +97,32 @@ public class createAccount {
 	                "-fx-border-insets: 1;\n" +
 	                "-fx-border-width: 2;\n" +
 	                "-fx-background-color: #9abaed;\n";
-		 middlePane.setStyle(createAccLayout);
+		 passwordPane.setStyle(createAccLayout);
 
-		 middlePane.setMaxWidth(400);
-		 middlePane.setMaxHeight(350);
-		 middlePane.setMinWidth(400);
-		 middlePane.setMinHeight(350);
+		 passwordPane.setMaxWidth(400);
+		 passwordPane.setMaxHeight(350);
+		 passwordPane.setMinWidth(400);
+		 passwordPane.setMinHeight(350);
 		 //passwordTF,setPrompt("")
-		 newAccountUI.setCenter(middlePane);
+		 newAccountUI.setCenter(passwordPane);
 		 
 		 
 		 
-		 middlePane.getChildren().add(passwordTitle);
-		 middlePane.getChildren().add(passwordTF);
-		 middlePane.getChildren().add(reEnterTF);
+		 passwordPane.getChildren().add(passwordTitle);
+		 passwordPane.getChildren().add(passwordTF);
+		 passwordPane.getChildren().add(reEnterTF);
 		 if (role.equals("Doctor") || role.equals("Nurse")) {
-			 middlePane.getChildren().add(healthCareVeriTF);
+			 passwordPane.getChildren().add(healthCareVeriTF);
 		 }
-		 middlePane.getChildren().add(something);
+		 passwordPane.getChildren().add(something);
 	
 		 something.setOnAction(new ButtonHandler());
 		 
 	 }
 	
+	private void passwordSec() {
+		
+	}
 
 	
 	private class ButtonHandler implements EventHandler<ActionEvent>{
