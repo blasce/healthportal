@@ -39,6 +39,7 @@ public class NurseView {
 		top();
 		leftSide();
 		rightSide();
+		buttonHandler();
 		nurseUI.getChildren().addAll(leftPane, rightPane);
 		mainPane.getChildren().addAll(topPane, nurseUI);
 		nurseUI.setPadding(new Insets(10,0,0,0));
@@ -71,7 +72,6 @@ public class NurseView {
 		topPane.getChildren().add(titleLabel);
 		topPane.getChildren().add(logoutButton);
 	}
-	
 	
 	private void leftSide() {
 		leftPane = new VBox();
@@ -305,7 +305,27 @@ public class NurseView {
 		HRButtonsPane.getChildren().addAll(healthIssButton, medButton,immuButton);
 	}
 	
+	private void buttonHandler() {
+		logoutButton.setOnAction(new ButtonHandler());
+	}
+	
 	public Scene getScene() {
 		return nurseScene;
+	}
+	
+	public class ButtonHandler implements EventHandler<ActionEvent>{
+		public void handle(ActionEvent e) {
+			Object source = e.getSource();
+			if (source == logoutButton) {
+				System.out.println("Logout pressed");
+				
+				Login backToLogin = new Login();
+				Window newWindow = nurseScene.getWindow();
+				if (newWindow instanceof Stage) {
+					Stage newStage = (Stage) newWindow;
+					newStage.setScene(backToLogin.getScene());
+				}
+			}
+		}
 	}
 }

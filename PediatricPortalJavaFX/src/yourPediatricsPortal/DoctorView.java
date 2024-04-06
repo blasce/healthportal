@@ -37,6 +37,7 @@ public class DoctorView {
 		top();
 		leftSide();
 		rightSide();
+		buttonHandler();
 		doctorUI.getChildren().addAll(leftPane, rightPane);
 		mainPane.getChildren().addAll(topPane, doctorUI);
 		
@@ -147,7 +148,6 @@ public class DoctorView {
 		patientSelPane.getChildren().addAll(patientSelectLabel,patientSelect, choosePatientButton);
 	}
 
-	
 	
 	private void vitalPaneFormatting() {
 		weightLabel = new Label("Weight (lbs):	");
@@ -342,6 +342,9 @@ public class DoctorView {
 		HRButtonsPane.getChildren().addAll(healthIssButton, medButton,immuButton);
 	}
 	
+	private void buttonHandler() {
+		logoutButton.setOnAction(new ButtonHandler());
+	}
 	
 	public Scene getScene() {
 		return scene;
@@ -350,6 +353,16 @@ public class DoctorView {
 	public class ButtonHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
 			Object source = e.getSource();
+			if (source == logoutButton) {
+				System.out.println("Logout pressed");
+				
+				Login backToLogin = new Login();
+				Window newWindow = scene.getWindow();
+				if (newWindow instanceof Stage) {
+					Stage newStage = (Stage) newWindow;
+					newStage.setScene(backToLogin.getScene());
+				}
+			}
 			
 		}
 	}
