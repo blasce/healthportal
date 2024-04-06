@@ -209,7 +209,7 @@ public class Login{
 
 					}
 					else if(hasLetter(dobTF.getText())) {
-						createError.setText("SDate of birth is not entered correctly.\nEnter in this format MM/DD/YYYY");
+						createError.setText("Date of birth is not entered correctly.\nEnter in this format MM/DD/YYYY");
 						createError.setTextFill(Color.RED);
 					}
 					else { // switches to new page

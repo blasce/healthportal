@@ -19,16 +19,16 @@ import javafx.scene.image.ImageView;
 
 public class DoctorView {
 	private Label patientSelectLabel, vitalLabel, recordDirecLabel, HRTypeLabel, presLabel, titleLabel, healthInfoLabel;
-	private Label weightLabel, tempLabel, heightLabel, bloodLabel, patientWeight, patientTemp, patientHeight, patientBlood;
-	private Text patientContactInfoText;
-	private Button healthIssButton, medButton, immuButton, alleButton, healthConcButton, presButton, cancelButton, cancel2Button, logoutButton, sumButton;
+	private Label weightLabel, tempLabel, heightLabel, bloodLabel, patientWeight, patientTemp, patientHeight, patientBlood, currentPatient, patInfoLabel;
+	private Button healthIssButton, medButton, immuButton, alleButton, healthConcButton, presButton, cancelButton, cancel2Button, logoutButton, sumButton, choosePatientButton;
 	private ComboBox<String> patientSelect; //maybe make it a text field instead
-	private TextArea prescribeTA, summTA, patTA, healthHistoryTA;
+	private TextArea prescribeTA, summTA, patTA, healthHistoryTA, patientContactInfoText;
 	private TextField  addressTF, dateTF;
 	private VBox mainPane, rightPane, leftPane, aCbuttonPane, bottomLeftPane, topRightPane, HRButtonsPane, displayHisPane;
-	private HBox doctorUI, topPane, aCPane, recordsPane;
+	private HBox doctorUI, topPane, aCPane, recordsPane, currentPatientPane, topLeftPane, patientSelPane, patientContact;
 	private Scene scene;
 	private GridPane vitalPanes;
+	private String patientCurrent;
 	
 	public DoctorView() {
 		mainPane = new VBox();
@@ -37,6 +37,7 @@ public class DoctorView {
 		top();
 		leftSide();
 		rightSide();
+		buttonHandler();
 		doctorUI.getChildren().addAll(leftPane, rightPane);
 		mainPane.getChildren().addAll(topPane, doctorUI);
 		
@@ -72,29 +73,81 @@ public class DoctorView {
 	
 	private void leftSide() {
 		leftPane = new VBox();
-		patientSelectLabel = new Label("Choose a Patient:");
+		currentPatientPane = new HBox();
+		topLeftPane = new HBox();
 		
-		//consider making combo box a textfield
-		patientSelect = new ComboBox<String>();
-		patientSelect.getItems().addAll("Patient1", "Patient2", "Patient3");
 		vitalLabel = new Label("Vitals:");
 		healthInfoLabel = new Label("Health Info:");
 		
-		patientSelect.setMinWidth(200);
-		patientSelectLabel.setFont(new Font("Comic Sans MS", 13));
-		patientSelectLabel.setStyle("-fx-font-weight: bold");
+		
 		vitalLabel.setFont(new Font("Comic Sans MS", 13));
 		vitalLabel.setStyle("-fx-font-weight: bold");
 		healthInfoLabel.setFont(new Font("Comic Sans MS", 13));
 		healthInfoLabel.setStyle("-fx-font-weight: bold");
 		vitalPanes = new GridPane();
+		patientSelect();
 		vitalPaneFormatting();
 		patientAllergiesAndConcerns();
 		prescribeAndSummary();		
 		leftPane.setPadding(new Insets(5,0,10,20));
 		leftPane.setSpacing(10);	
-		leftPane.getChildren().addAll(patientSelectLabel, patientSelect,vitalLabel,vitalPanes, healthInfoLabel,aCPane, bottomLeftPane);
+		leftPane.getChildren().addAll(patientSelPane, topLeftPane,vitalLabel,vitalPanes, healthInfoLabel,aCPane, bottomLeftPane);
 	}
+	
+	
+	private void patientSelect() {
+		patientSelPane = new HBox(2);
+		patientCurrent = "Bob Marley";
+		currentPatient = new Label("Current Patient: " + patientCurrent);
+		
+		
+		patientSelectLabel = new Label("Select a Patient");
+		choosePatientButton = new Button("Choose Patient");
+		
+		patientSelectLabel.setFont(new Font("Comic Sans MS", 13));
+		patientSelectLabel.setStyle("-fx-font-weight: bold");
+		
+		patientSelect = new ComboBox<String>();
+		patientSelect.getItems().addAll("Patient1", "Patient2", "Patient3");
+		patInfoLabel=new Label("Patient Contact #: ");
+
+		currentPatient.setFont(new Font("Comic Sans MS", 13));
+		currentPatient.setStyle("-fx-font-weight: bold");
+		patInfoLabel.setFont(new Font("Comic Sans MS", 12));
+		patInfoLabel.setStyle("-fx-font-weight: bold");
+		patientSelect.setMinWidth(200);
+		patientContact = new HBox();
+		
+		patientContact.setMaxWidth(250);
+		patientContact.setMinWidth(250);
+		
+		patientContactInfoText = new TextArea();
+		patientContactInfoText.setEditable(false);
+		patientContact.getChildren().addAll(patInfoLabel, patientContactInfoText);
+		patientContactInfoText.setMinWidth(120);
+		patientContactInfoText.setMaxWidth(120);
+		patientContactInfoText.setMinHeight(27);
+		patientContactInfoText.setMaxHeight(27);
+		
+		patientContactInfoText.setText("213-332-9131");
+		
+		patientContact.setMargin(patInfoLabel, new Insets(3,5,2,5));
+		patientSelPane.setPadding(new Insets(3,0,0,0));
+		currentPatientPane.setMargin(currentPatient, new Insets(2,5,0,5));
+		
+		patientSelPane.setSpacing(10);
+		topLeftPane.setSpacing(0.1);
+		
+		String contactLayout = "-fx-border-color: black;\n" +
+                "-fx-border-width: 1;\n" ;
+		patientContact.setStyle(contactLayout);
+		currentPatientPane.setStyle(contactLayout);
+		
+		currentPatientPane.getChildren().addAll(currentPatient);
+		topLeftPane.getChildren().addAll(currentPatientPane, patientContact);
+		patientSelPane.getChildren().addAll(patientSelectLabel,patientSelect, choosePatientButton);
+	}
+
 	
 	private void vitalPaneFormatting() {
 		weightLabel = new Label("Weight (lbs):	");
@@ -107,10 +160,10 @@ public class DoctorView {
 		patientHeight = new Label("5'7");
 		patientBlood = new Label("120/80");
 		
-		vitalPanes.setAlignment(Pos.CENTER_RIGHT); 
+		//vitalPanes.setAlignment(Pos.CENTER_RIGHT); 
 		
 		vitalPanes = new GridPane();
-		vitalPanes.setPadding(new Insets(-5,0,0,20));
+		vitalPanes.setPadding(new Insets(-5,0,0,00));
 		vitalPanes.setVgap(0.1); 
 	    vitalPanes.setHgap(10); 
 	    vitalPanes.setPrefWidth(400);
@@ -178,6 +231,7 @@ public class DoctorView {
 		alleButton.setMaxWidth(120);
 		healthConcButton.setMaxWidth(120);
 		
+		aCPane.setPadding(new Insets(-10,0,0,0));
 		
 		String textLayout =  "-fx-border-color: black;\n" +
                 "-fx-border-width: 1;\n";
@@ -215,7 +269,7 @@ public class DoctorView {
 		summTA.setMaxHeight(100);
 		summTA.setPrefHeight(Region.USE_COMPUTED_SIZE);
 		
-		bottomLeftPane.setMargin(addressTF, new Insets(0,0,-9,0));
+		bottomLeftPane.setMargin(addressTF, new Insets(-10,0,-9,0));
 		bottomLeftPane.setMargin(dateTF, new Insets(0,0,-9,0));
 		prescribeTA.setWrapText(true);
 		summTA.setWrapText(true);
@@ -288,6 +342,9 @@ public class DoctorView {
 		HRButtonsPane.getChildren().addAll(healthIssButton, medButton,immuButton);
 	}
 	
+	private void buttonHandler() {
+		logoutButton.setOnAction(new ButtonHandler());
+	}
 	
 	public Scene getScene() {
 		return scene;
@@ -296,6 +353,16 @@ public class DoctorView {
 	public class ButtonHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
 			Object source = e.getSource();
+			if (source == logoutButton) {
+				System.out.println("Logout pressed");
+				
+				Login backToLogin = new Login();
+				Window newWindow = scene.getWindow();
+				if (newWindow instanceof Stage) {
+					Stage newStage = (Stage) newWindow;
+					newStage.setScene(backToLogin.getScene());
+				}
+			}
 			
 		}
 	}
