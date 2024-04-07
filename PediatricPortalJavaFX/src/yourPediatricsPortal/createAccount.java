@@ -20,17 +20,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 public class createAccount {
-	private Button something, logout, immuSubmit, healthIssSubmit, medSubmit, cancel1, cancel2, cancel3;
+	private Button confirmAccountButton, logout, immuSubmit, healthIssSubmit, medSubmit, cancel1, cancel2, cancel3, delete, cancel4;
 	private Label titleLabel, passwordTitle, recordHealthLabel, immuLabel, healthIssLabel, medLabel, nameLabel, dobLabel, userLabel;
-	private Label healthLabel, immuLabel2, healthIssLabel2, medLabel2;
-	private Label date;
-	private TextField passwordTF, reEnterTF, healthCareVeriTF, immuTF, healthIssTF, medTF, date1TF, date2TF, date3TF;
+	private Label healthLabel, immuLabel2, healthIssLabel2, medLabel2, passwordLabel, reEnterLabel;
+	private Label deleteLabel, date;
+	private Label errorMess1, errorMess2;
+	private TextField passwordTF, reEnterTF, healthCareVeriTF, immuTF, healthIssTF, medTF, date1TF, date2TF, date3TF, date4TF, deleteTF;
 	private TextArea immunizationsTA, healthIssTA, medTA;
 	private BorderPane newAccountUI;
 	private Scene accountScene;
 	private VBox passwordPane, patientPane, passUserPane, accountInfoPane, fillOutPane;
 	private HBox topPane, midPane;
-	private String first, last, dob, role,username;
+	private String first, last, dob, role,username, immu, healthIss, med;
+	private ComboBox<String> healthCB;
 	
 	public createAccount (String first, String last, String dob, String role) {
 		this.first = first;
@@ -78,27 +80,37 @@ public class createAccount {
 		newAccountUI.setTop(topPane);
 	}
 	
-	
 	private void middle() {
 		 passwordPane = new VBox();
 		 passwordTitle = new Label("Create a Password");
 		 passwordTF = new TextField("");
+		 passwordLabel = new Label("Enter a password - 8 or more characters,\nwith one special character");
 		 passwordTF.setPromptText("Enter a password");
 		 reEnterTF = new TextField("");
+		 reEnterLabel = new Label("Re-enter password");
 		 reEnterTF.setPromptText("Re-enter password");
 		 healthCareVeriTF = new TextField("");
 		 healthCareVeriTF.setPromptText("Enter verification code");
-		 something = new Button("Confirm Account");
+		 confirmAccountButton = new Button("Confirm Account");
 		 
 		 passwordPane.setMargin(passwordTitle, new Insets(10,0,10,-250));
 		 passwordPane.setMargin(passwordTF, new Insets(5,10,10,10));
 		 passwordPane.setMargin(reEnterTF, new Insets(5,10,10,10));
 		 passwordPane.setMargin(healthCareVeriTF, new Insets(5,10,10,10));
-		 passwordPane.setMargin(something, new Insets(10,0,0,0));
+		 passwordPane.setMargin(confirmAccountButton, new Insets(10,0,0,0));
 		 passwordPane.setAlignment(Pos.TOP_CENTER);
 			
 		 passwordTitle.setFont(new Font("Comic Sans MS", 14));
 		 passwordTitle.setStyle("-fx-font-weight: bold");
+		 
+		 passwordLabel.setFont(new Font("Comic Sans MS", 12));
+		 passwordLabel.setStyle("-fx-font-weight: bold");
+		 
+		 reEnterLabel.setFont(new Font("Comic Sans MS", 12));
+		 reEnterLabel.setStyle("-fx-font-weight: bold");
+		 
+		 passwordLabel.setPadding(new Insets(0,110,0,0));
+		 reEnterLabel.setPadding(new Insets(0,250,0,0));
 		 
 		 String createAccLayout = "-fx-border-color: black;\n" +
 	                "-fx-border-insets: 1;\n" +
@@ -110,22 +122,25 @@ public class createAccount {
 		 passwordPane.setMaxHeight(370);
 		 passwordPane.setMinWidth(400);
 		 passwordPane.setMinHeight(370);
-		 //passwordTF,setPrompt("")
 		 newAccountUI.setCenter(passwordPane);
 		 
 		 
 		 
 		 passwordPane.getChildren().add(passwordTitle);
+		 passwordPane.getChildren().add(passwordLabel);
 		 passwordPane.getChildren().add(passwordTF);
+		 passwordPane.getChildren().add(reEnterLabel);
 		 passwordPane.getChildren().add(reEnterTF);
+		 confirmAccountButton.setOnAction(new ButtonHandler());
 		 if (role.equals("Doctor") || role.equals("Nurse")) {
+			 newAccountUI.setMargin(passwordPane, new Insets(-50,0,0,0));
 			 passwordPane.getChildren().add(healthCareVeriTF);
+			
 		 } else {
 			 patientForm();
+			 buttonHandling();
 		 }
-		 passwordPane.getChildren().add(something);
-	
-		 something.setOnAction(new ButtonHandler());
+		 passwordPane.getChildren().add(confirmAccountButton);
 		 
 	 }
 	
@@ -134,7 +149,6 @@ public class createAccount {
 		patientPane = new VBox();
 		passUserPane = new VBox();
 		accountInfoPane = new VBox();
-		
 		
 		nameLabel = new Label("Welcome, "+ first + " " + last);
 		dobLabel = new Label("Your DOB is " + dob);
@@ -146,7 +160,7 @@ public class createAccount {
 		dobLabel.setPadding(new Insets(0,0,0,10));
 		userLabel.setPadding(new Insets(0,0,0,10));
 		
-		healthLabel = new Label("Health Form: Fill out below accordingly");
+		healthLabel = new Label("Health Form:");
 		immuLabel = new Label("Immunizations:");
 		healthIssLabel = new Label("Health Issues:");
 		medLabel = new Label("Medications: ");
@@ -237,12 +251,25 @@ public class createAccount {
 		date1TF = new TextField();
 		date2TF = new TextField();
 		date3TF = new TextField();
+		date4TF = new TextField();
 		immuSubmit = new Button("Submit");
 		healthIssSubmit = new Button("Submit");
 		medSubmit = new Button("Submit");
 		cancel1 = new Button("Cancel");
 		cancel2 =new Button("Cancel");
 		cancel3 = new Button("Cancel");
+		cancel4 = new Button("Cancel");
+		deleteLabel = new Label("Delete input");
+		delete = new Button("Delete");
+		deleteTF = new TextField();
+		healthCB = new ComboBox();
+		healthCB.getItems().addAll("Immunizations", "Health Issues", "Medications");
+		healthCB.setValue("Select");
+		
+		immu = "";
+		healthIss = "";
+		med = "";
+		
 		
 		fillOutPane.setMargin(recordHealthLabel, new Insets(0,10,0,5));
 		
@@ -256,7 +283,7 @@ public class createAccount {
 		HBox buttons1 = new HBox();
 		buttons1.getChildren().addAll(immuSubmit, cancel1);
 		fillOutPane.setMargin(immu, new Insets(0,10,0,10));
-		fillOutPane.setMargin(buttons1, new Insets(5,10,20,10));
+		fillOutPane.setMargin(buttons1, new Insets(5,10,10,10));
 		immu.setSpacing(10);
 		buttons1.setSpacing(10);
 		
@@ -266,7 +293,7 @@ public class createAccount {
 		buttons2.getChildren().addAll(healthIssSubmit, cancel2);
 		fillOutPane.setMargin(healthIssLabel2, new Insets(0,10,0,10));
 		fillOutPane.setMargin(healthIss, new Insets(0,10,0,10));
-		fillOutPane.setMargin(buttons2, new Insets(5,10,20,10));
+		fillOutPane.setMargin(buttons2, new Insets(2,10,10,10));
 		healthIss.setSpacing(10);
 		buttons2.setSpacing(10);
 		
@@ -276,9 +303,19 @@ public class createAccount {
 		buttons3.getChildren().addAll(medSubmit, cancel3);
 		fillOutPane.setMargin(medLabel2, new Insets(0,10,0,10));
 		fillOutPane.setMargin(med, new Insets(0,10,0,10));
-		fillOutPane.setMargin(buttons3, new Insets(5,10,20,10));
+		fillOutPane.setMargin(buttons3, new Insets(2,10,10,10));
 		med.setSpacing(10);
 		buttons3.setSpacing(10);
+		
+		HBox deletion = new HBox();
+		deletion.getChildren().addAll(deleteTF, date4TF);
+		HBox buttons4 = new HBox();
+		buttons4.getChildren().addAll(delete, cancel4, healthCB);
+		fillOutPane.setMargin(deleteLabel, new Insets(0,10,0,10));
+		fillOutPane.setMargin(deletion, new Insets(0,10,0,10));
+		fillOutPane.setMargin(buttons4, new Insets(2,10,0,10));
+		deletion.setSpacing(10);
+		buttons4.setSpacing(10);
 		
 		recordHealthLabel.setFont(new Font("Comic Sans MS", 14));
 		recordHealthLabel.setStyle("-fx-font-weight: bold");
@@ -289,6 +326,8 @@ public class createAccount {
 		healthIssLabel2.setStyle("-fx-font-weight: bold");
 		medLabel2.setFont(new Font("Comic Sans MS", 12));
 		medLabel2.setStyle("-fx-font-weight: bold");
+		deleteLabel.setFont(new Font("Comic Sans MS", 12));
+		deleteLabel.setStyle("-fx-font-weight: bold");
 		
 		date.setFont(new Font("Comic Sans MS", 12));
 		date.setStyle("-fx-font-weight: bold");
@@ -299,13 +338,23 @@ public class createAccount {
 	                "-fx-background-color: #9abaed;\n";
 		 fillOutPane.setStyle(accLayout);
 		
-		fillOutPane.getChildren().addAll(recordHealthLabel, label, immu,buttons1, healthIssLabel2, healthIss, buttons2, medLabel2, med, buttons3);
+
+		 
+		fillOutPane.getChildren().addAll(recordHealthLabel, label, immu,buttons1, healthIssLabel2, healthIss, buttons2, medLabel2, med, buttons3, deleteLabel, deletion, buttons4);
 	}
 	
+	private void buttonHandling() {
+		 confirmAccountButton.setOnAction(new ButtonHandler());
+		 immuSubmit.setOnAction(new ButtonHandler());
+		 healthIssSubmit.setOnAction(new ButtonHandler());
+		 medSubmit.setOnAction(new ButtonHandler());
+		 delete.setOnAction(new ButtonHandler());
+		 
+	}
 	private class ButtonHandler implements EventHandler<ActionEvent>{
 		public void handle(ActionEvent e) {
 			Object source = e.getSource();
-			if (source == something) {
+			if (source == confirmAccountButton) {
 				System.out.println("Welcome to your new account " + first + " " + last);
 				System.out.println("Your username will be: " + first.substring(0,1) + last+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10)); //username creation
 				System.out.println("You are a " + role);
@@ -318,9 +367,72 @@ public class createAccount {
 					Stage newStage = (Stage) newWindow;
 					newStage.setScene(backToLogin.getScene());
 				}
+			} else if (source == immuSubmit) {
+
+				System.out.println("immunizations submitted");
+				immu = immu + date1TF.getText() + " " + immuTF.getText() +"\n";
+				date1TF.setText("");
+				immuTF.setText("");
+				immunizationsTA.setText(immu);
+				
+			} else if (source == healthIssSubmit) {
+
+				System.out.println("health issues submitted");
+				healthIss = healthIss+date2TF.getText() + " " + healthIssTF.getText()+"\n";
+				date2TF.setText("");
+				healthIssTF.setText("");
+				healthIssTA.setText(healthIss);
+				
+			} else if (source == medSubmit) {
+
+				System.out.println("medications submitted");
+				med = med+date3TF.getText() + " " + medTF.getText()+"\n";
+				date3TF.setText("");
+				medTF.setText("");
+				medTA.setText(med);
+				
+			} else if (source == delete) {
+				String placeholder = date4TF.getText()+ " " + deleteTF.getText() +"\n";
+				
+				if (healthCB.getValue().equals("Immunizations")) {
+					if (immu.contains(placeholder)) {
+						int indexStart = immu.indexOf(placeholder);
+						int indexEnd = indexStart+placeholder.length()-1;
+						System.out.println("start: " + indexStart + " end: "+ indexEnd);
+						immu = immu.substring(0,indexStart) + immu.substring(indexEnd+1, immu.length());
+						System.out.println("This is final immu text: " + immu);
+					
+						immunizationsTA.setText(immu);
+					}
+				} else if (healthCB.getValue().equals("Health Issues")) {
+
+					if (healthIss.contains(placeholder)) {
+						int indexStart = healthIss.indexOf(placeholder);
+						int indexEnd = indexStart+placeholder.length()-1;
+						System.out.println("start: " + indexStart + " end: "+ indexEnd);
+						healthIss = healthIss.substring(0,indexStart) + healthIss.substring(indexEnd+1, healthIss.length());
+						System.out.println("This is final immu text: " + healthIss);
+				
+						healthIssTA.setText(healthIss);
+					}
+				} else if (healthCB.getValue().equals("Medications")) {
+					if (med.contains(placeholder)) {
+						int indexStart = med.indexOf(placeholder);
+						int indexEnd = indexStart+placeholder.length()-1;
+						System.out.println("start: " + indexStart + " end: "+ indexEnd);
+						med = med.substring(0,indexStart) + med.substring(indexEnd+1, med.length());
+						System.out.println("This is final immu text: " + med);
+				
+						medTA.setText(med);
+					}
+				} else {
+					System.out.println("No value selected in dropdown menu");
+				}
 			}
 		}
 	}
+	
+
 	
 	public Scene getScene() {
 		return accountScene;
