@@ -4,6 +4,11 @@ package yourPediatricsPortal;
 
 import javafx.scene.paint.Color;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.stage.Window;
 import javafx.event.ActionEvent;
@@ -383,6 +388,7 @@ public class createAccount {
 					errorMess1.setText("Passwords do not match");
 				} else {
 					System.out.println("You are a " + role);
+					userMaker();
 				}
 
 			} else if (source == logout) {
@@ -553,5 +559,45 @@ public class createAccount {
 		return accountScene;
 	}
 	
+	private void userMaker() {
+		if(role.equals("Nurse") || role.equals("Doctor")) {
+			String dir = System.getProperty("user.dir") + "\\users\\healthcare professionals";
+			File location = new File(dir);
+			if(!location.exists()) {
+				location.mkdirs();
+			}
+			File file = new File(dir + "\\" + username + ".txt");
+			try {
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+	            BufferedWriter bw = new BufferedWriter(fw);
+	            bw.write(first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n" + dob);
+	            bw.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		} else if(role.equals("Patient")){
+			String dir = System.getProperty("user.dir") + "\\users\\Patient";
+			File location = new File(dir);
+			if(!location.exists()) {
+				location.mkdirs();
+			}
+			File file = new File(dir + "\\" + username + ".txt");
+			File patients = new File(dir + "\\" + "Patients.txt");
+			try {
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+				FileWriter all = new FileWriter(patients.getAbsoluteFile(), true);
+	            BufferedWriter bw = new BufferedWriter(fw);
+	            bw.write(first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n" + dob  + "\nimmunization\n" + immu + "\nhealth issues\n" + healthIss+ "\nmedication\n" + med);
+	            bw.close();
+	            BufferedWriter bdub = new BufferedWriter(all);
+	            bdub.append(first + " " + last + " " + dob + "\n" + username + "\n");
+	            bdub.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		}
+	}//end of userMaker function
 
 }
+
+

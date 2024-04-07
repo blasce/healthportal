@@ -1,6 +1,10 @@
 package yourPediatricsPortal;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -111,8 +115,12 @@ public class NurseView {
 		patientSelectLabel.setStyle("-fx-font-weight: bold");
 		
 		patientSelect = new ComboBox<String>();
-		patientSelect.getItems().addAll("Patient1", "Patient2", "Patient3");
 		patInfoLabel=new Label("Patient Contact #: ");
+		try {
+			patientListing();
+		} catch (FileNotFoundException ex) {
+			System.out.println("FAIL");
+		}
 
 		currentPatient.setFont(new Font("Comic Sans MS", 13));
 		currentPatient.setStyle("-fx-font-weight: bold");
@@ -149,6 +157,24 @@ public class NurseView {
 		currentPatientPane.getChildren().addAll(currentPatient);
 		topLeftPane.getChildren().addAll(currentPatientPane, patientContact);
 		patientSelPane.getChildren().addAll(patientSelectLabel,patientSelect, choosePatientButton);
+	}
+	
+	private void patientListing()throws FileNotFoundException{
+		String dir = System.getProperty("user.dir") + "\\users\\Patient\\Patients.txt";
+		File patient = new File(dir);
+		Scanner scnr = new Scanner(patient);
+		int count = 0;
+		System.out.println("something");
+		while(scnr.hasNextLine()) {
+			if (count%2 == 0) {
+				String temp = scnr.nextLine();
+				System.out.println(temp);
+				patientSelect.getItems().add(temp);
+			} else {
+				scnr.nextLine();
+			}
+			count +=1;
+		}
 	}
 
 	private void vitalPaneFormatting() {
