@@ -92,12 +92,16 @@ public class createAccount {
 		 healthCareVeriTF = new TextField("");
 		 healthCareVeriTF.setPromptText("Enter verification code");
 		 confirmAccountButton = new Button("Confirm Account");
+		 errorMess1 = new Label("");
 		 
+		 errorMess1.setFont(new Font("Comic Sans MS", 12));
+		 errorMess1.setTextFill(Color.RED);
+		 errorMess1.setPadding(new Insets(10,0,0,10));
 		 passwordPane.setMargin(passwordTitle, new Insets(10,0,10,-250));
 		 passwordPane.setMargin(passwordTF, new Insets(5,10,10,10));
 		 passwordPane.setMargin(reEnterTF, new Insets(5,10,10,10));
 		 passwordPane.setMargin(healthCareVeriTF, new Insets(5,10,10,10));
-		 passwordPane.setMargin(confirmAccountButton, new Insets(10,0,0,0));
+		 passwordPane.setMargin(confirmAccountButton, new Insets(5,0,0,0));
 		 passwordPane.setAlignment(Pos.TOP_CENTER);
 			
 		 passwordTitle.setFont(new Font("Comic Sans MS", 14));
@@ -119,9 +123,9 @@ public class createAccount {
 		passwordPane.setStyle(createAccLayout);
 
 		 passwordPane.setMaxWidth(400);
-		 passwordPane.setMaxHeight(370);
+		 passwordPane.setMaxHeight(400);
 		 passwordPane.setMinWidth(400);
-		 passwordPane.setMinHeight(370);
+		 passwordPane.setMinHeight(400);
 		 newAccountUI.setCenter(passwordPane);
 		 
 		 
@@ -131,6 +135,7 @@ public class createAccount {
 		 passwordPane.getChildren().add(passwordTF);
 		 passwordPane.getChildren().add(reEnterLabel);
 		 passwordPane.getChildren().add(reEnterTF);
+		 
 		 confirmAccountButton.setOnAction(new ButtonHandler());
 		 if (role.equals("Doctor") || role.equals("Nurse")) {
 			 newAccountUI.setMargin(passwordPane, new Insets(-50,0,0,0));
@@ -141,6 +146,7 @@ public class createAccount {
 			 buttonHandling();
 		 }
 		 passwordPane.getChildren().add(confirmAccountButton);
+		 passwordPane.getChildren().add(errorMess1);
 		 
 	 }
 	
@@ -266,6 +272,11 @@ public class createAccount {
 		healthCB.getItems().addAll("Immunizations", "Health Issues", "Medications");
 		healthCB.setValue("Select");
 		
+		errorMess2 = new Label("");
+		errorMess2.setFont(new Font("Comic Sans MS", 12));
+		errorMess2.setTextFill(Color.RED);
+		errorMess2.setPadding(new Insets(10,0,0,10));
+		
 		immu = "";
 		healthIss = "";
 		med = "";
@@ -317,6 +328,12 @@ public class createAccount {
 		deletion.setSpacing(10);
 		buttons4.setSpacing(10);
 		
+		date1TF.setPromptText("MM/DD/YYYY");
+		date2TF.setPromptText("MM/DD/YYYY");
+		date3TF.setPromptText("MM/DD/YYYY");
+		date4TF.setPromptText("MM/DD/YYYY");
+		
+		
 		recordHealthLabel.setFont(new Font("Comic Sans MS", 14));
 		recordHealthLabel.setStyle("-fx-font-weight: bold");
 		
@@ -340,7 +357,7 @@ public class createAccount {
 		
 
 		 
-		fillOutPane.getChildren().addAll(recordHealthLabel, label, immu,buttons1, healthIssLabel2, healthIss, buttons2, medLabel2, med, buttons3, deleteLabel, deletion, buttons4);
+		fillOutPane.getChildren().addAll(recordHealthLabel, label, immu,buttons1, healthIssLabel2, healthIss, buttons2, medLabel2, med, buttons3, deleteLabel, deletion, buttons4, errorMess2);
 	}
 	
 	private void buttonHandling() {
@@ -355,9 +372,19 @@ public class createAccount {
 		public void handle(ActionEvent e) {
 			Object source = e.getSource();
 			if (source == confirmAccountButton) {
-				System.out.println("Welcome to your new account " + first + " " + last);
-				System.out.println("Your username will be: " + first.substring(0,1) + last+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10)); //username creation
-				System.out.println("You are a " + role);
+				if (passwordTF.getText().equals("") || reEnterTF.getText().equals("")) {
+					System.out.println("empty");
+					errorMess1.setText("Invalid Password");
+				} else if (passwordTF.getText().length()<8) {
+					errorMess1.setText("Too little characters");
+				} else if (!specialCharChecker(passwordTF.getText())) {
+					errorMess1.setText("No special characters");
+				} else if (!passwordTF.getText().equals(reEnterTF.getText())){
+					errorMess1.setText("Passwords do not match");
+				} else {
+					System.out.println("You are a " + role);
+				}
+
 			} else if (source == logout) {
 				System.out.println("Logout pressed");
 				
@@ -368,71 +395,159 @@ public class createAccount {
 					newStage.setScene(backToLogin.getScene());
 				}
 			} else if (source == immuSubmit) {
+				String placeholder = date1TF.getText()+ " " + immuTF.getText() +"\n";
+				System.out.println("immu submit clicked");
+				if(date1TF.getText().equals("") || immuTF.getText().equals("")) {
+					errorMess2.setText("Invalid input");
+				}
+				else if(immu.contains(placeholder)) {
+					errorMess2.setText("Duplicate input");
+				}else if(date1TF.getText().length() != 10||date1TF.getText().charAt(2) != '/' || date1TF.getText().charAt(5) != '/'){
+					errorMess2.setText("Date is not entered correctly. \nEnter in this format MM/DD/YYYY");
+					errorMess2.setTextFill(Color.RED);
 
-				System.out.println("immunizations submitted");
-				immu = immu + date1TF.getText() + " " + immuTF.getText() +"\n";
-				date1TF.setText("");
-				immuTF.setText("");
-				immunizationsTA.setText(immu);
+				}
+				else if(hasLetter(date1TF.getText())) {
+					errorMess2.setText("Date is not entered correctly.\nEnter in this format MM/DD/YYYY");
+					errorMess2.setTextFill(Color.RED);
+				}
+				else {
+					errorMess2.setText("");
+					System.out.println("immunizations submitted");
+					immu = immu + date1TF.getText() + " " + immuTF.getText() +"\n";
+					date1TF.setText("");
+					immuTF.setText("");
+					immunizationsTA.setText(immu);
+				}
 				
 			} else if (source == healthIssSubmit) {
+				System.out.println("health iss submit clicked");
+				String placeholder = date2TF.getText()+ " " + healthIssTF.getText() +"\n";
+				if(date2TF.getText().equals("") || healthIssTF.getText().equals("")) {
+					errorMess2.setText("Invalid input");
+				}
+				else if(healthIss.contains(placeholder)) {
+					errorMess2.setText("Duplicate input");
+				}else if(date2TF.getText().length() != 10||date2TF.getText().charAt(2) != '/' || date2TF.getText().charAt(5) != '/'){
+					errorMess2.setText("Date is not entered correctly. \nEnter in this format MM/DD/YYYY");
+					errorMess2.setTextFill(Color.RED);
 
-				System.out.println("health issues submitted");
-				healthIss = healthIss+date2TF.getText() + " " + healthIssTF.getText()+"\n";
-				date2TF.setText("");
-				healthIssTF.setText("");
-				healthIssTA.setText(healthIss);
+				}
+				else if(hasLetter(date2TF.getText())) {
+					errorMess2.setText("Date is not entered correctly.\nEnter in this format MM/DD/YYYY");
+					errorMess2.setTextFill(Color.RED);
+				}
+				else {
+					errorMess2.setText("");
+					System.out.println("health issues submitted");
+					healthIss = healthIss+date2TF.getText() + " " + healthIssTF.getText()+"\n";
+					date2TF.setText("");
+					healthIssTF.setText("");
+					healthIssTA.setText(healthIss);
+				}
 				
 			} else if (source == medSubmit) {
+				System.out.println("med submit clicked");
+				String placeholder = date3TF.getText()+ " " + medTF.getText() +"\n";
+				if(date3TF.getText().equals("") || medTF.getText().equals("")) {
+					errorMess2.setText("Invalid input");
+				}
+				else if (med.contains(placeholder)) {
+					errorMess2.setText("Duplicate input");
+				}else if(date3TF.getText().length() != 10||date3TF.getText().charAt(2) != '/' || date3TF.getText().charAt(5) != '/'){
+					errorMess2.setText("Date is not entered correctly. \nEnter in this format MM/DD/YYYY");
+					errorMess2.setTextFill(Color.RED);
 
-				System.out.println("medications submitted");
-				med = med+date3TF.getText() + " " + medTF.getText()+"\n";
-				date3TF.setText("");
-				medTF.setText("");
-				medTA.setText(med);
+				}
+				else if(hasLetter(date3TF.getText())) {
+					errorMess2.setText("Date is not entered correctly.\nEnter in this format MM/DD/YYYY");
+					errorMess2.setTextFill(Color.RED);
+				}
+				else {
+					errorMess2.setText("");
+					System.out.println("medications submitted");
+					med = med+date3TF.getText() + " " + medTF.getText()+"\n";
+					date3TF.setText("");
+					medTF.setText("");
+					medTA.setText(med);
+				}
 				
 			} else if (source == delete) {
+				System.out.println("delete clicked");
 				String placeholder = date4TF.getText()+ " " + deleteTF.getText() +"\n";
-				
-				if (healthCB.getValue().equals("Immunizations")) {
-					if (immu.contains(placeholder)) {
-						int indexStart = immu.indexOf(placeholder);
-						int indexEnd = indexStart+placeholder.length()-1;
-						System.out.println("start: " + indexStart + " end: "+ indexEnd);
-						immu = immu.substring(0,indexStart) + immu.substring(indexEnd+1, immu.length());
-						System.out.println("This is final immu text: " + immu);
-					
-						immunizationsTA.setText(immu);
-					}
-				} else if (healthCB.getValue().equals("Health Issues")) {
+				if(date4TF.getText().equals("") || deleteTF.getText().equals("")) {
+					errorMess2.setText("Invalid input");
+				}else if(date4TF.getText().length() != 10||date4TF.getText().charAt(2) != '/' || date4TF.getText().charAt(5) != '/'){
+					errorMess2.setText("Date is not entered correctly. \nEnter in this format MM/DD/YYYY");
+					errorMess2.setTextFill(Color.RED);
 
-					if (healthIss.contains(placeholder)) {
-						int indexStart = healthIss.indexOf(placeholder);
-						int indexEnd = indexStart+placeholder.length()-1;
-						System.out.println("start: " + indexStart + " end: "+ indexEnd);
-						healthIss = healthIss.substring(0,indexStart) + healthIss.substring(indexEnd+1, healthIss.length());
-						System.out.println("This is final immu text: " + healthIss);
-				
-						healthIssTA.setText(healthIss);
-					}
-				} else if (healthCB.getValue().equals("Medications")) {
-					if (med.contains(placeholder)) {
-						int indexStart = med.indexOf(placeholder);
-						int indexEnd = indexStart+placeholder.length()-1;
-						System.out.println("start: " + indexStart + " end: "+ indexEnd);
-						med = med.substring(0,indexStart) + med.substring(indexEnd+1, med.length());
-						System.out.println("This is final immu text: " + med);
-				
-						medTA.setText(med);
-					}
-				} else {
-					System.out.println("No value selected in dropdown menu");
 				}
-			}
-		}
-	}
+				else if(hasLetter(date4TF.getText())) {
+					errorMess2.setText("Date is not entered correctly.\nEnter in this format MM/DD/YYYY");
+					errorMess2.setTextFill(Color.RED);
+				}
+				else {
+					if (healthCB.getValue().equals("Immunizations")) {
+						if (immu.contains(placeholder)) {
+							int indexStart = immu.indexOf(placeholder);
+							int indexEnd = indexStart+placeholder.length()-1;
+							System.out.println("start: " + indexStart + " end: "+ indexEnd);
+							immu = immu.substring(0, indexStart) + immu.substring(indexEnd+1, immu.length());
+							System.out.println("This is final immu text: " + immu);
+						
+							immunizationsTA.setText(immu);
+						}
+					} else if (healthCB.getValue().equals("Health Issues")) {
+
+						if (healthIss.contains(placeholder)) {
+							int indexStart = healthIss.indexOf(placeholder);
+							int indexEnd = indexStart+placeholder.length()-1;
+							System.out.println("start: " + indexStart + " end: "+ indexEnd);
+							healthIss = healthIss.substring(0,indexStart) + healthIss.substring(indexEnd+1, healthIss.length());
+							System.out.println("This is final immu text: " + healthIss);
+					
+							healthIssTA.setText(healthIss);
+						}
+					} else if (healthCB.getValue().equals("Medications")) {
+						if (med.contains(placeholder)) {
+							int indexStart = med.indexOf(placeholder);
+							int indexEnd = indexStart+placeholder.length()-1;
+							System.out.println("start: " + indexStart + " end: "+ indexEnd);
+							med = med.substring(0,indexStart) + med.substring(indexEnd+1, med.length());
+							System.out.println("This is final immu text: " + med);
+					
+							medTA.setText(med);
+						}
+					} else {
+						errorMess2.setText("No value selected in dropdown menu");
+					}
+				}// end of error if
+
+			}//end of button if statements
+		}//end of handle method
+	} // end of button handler event class
 	
 
+	private boolean specialCharChecker(String placeholder) {
+		for (int i = 0; i<placeholder.length(); i++) {
+			if (!Character.isDigit(placeholder.charAt(i))  && !Character.isLetter(placeholder.charAt(i)) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean hasLetter(String s) { //checks if there is a letter in a Date
+		for(int i = 0; i < s.length(); i++) {
+			if (i == 2 || i ==5) {
+				continue;
+			}
+			if(!Character.isDigit(s.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public Scene getScene() {
 		return accountScene;
