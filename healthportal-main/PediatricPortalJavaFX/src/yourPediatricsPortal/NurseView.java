@@ -1,8 +1,11 @@
 package yourPediatricsPortal;
 
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 import javafx.application.Application;
@@ -277,6 +280,7 @@ public class NurseView {
 		submitButton = new Button("Submit Form");
 		cancelButton = new Button("Cancel");
 		
+		submitButton.setOnAction(null);
 		bottomPane.getChildren().addAll(submitButton, cancelButton);
 		
 	}
@@ -333,6 +337,7 @@ public class NurseView {
 	
 	private void buttonHandler() {
 		logoutButton.setOnAction(new ButtonHandler());
+		submitButton.setOnAction(new ButtonHandler());
 	}
 	
 	public Scene getScene() {
@@ -352,6 +357,30 @@ public class NurseView {
 					newStage.setScene(backToLogin.getScene());
 				}
 			}
+			else if(source == submitButton) {
+				collectData();
+			}
 		}
 	}
+	
+	public void collectData() {
+		String data = patientWeight.getText() + "\n" +  patientHeight.getText()+ "\n" +  patientTemp.getText() + "\n" +  patientBlood.getText() + allergyTA.getText() + "\n" +  healthConcernTA.getText();
+		String information = patientSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String username =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		
+		String dir = System.getProperty("user.dir") + "\\users\\Patient";
+		File file = new File(dir + "\\" + username + "_Vitals.txt");
+		
+		try {
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(data);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+	}
+}
 }
