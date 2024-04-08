@@ -1,8 +1,11 @@
 package yourPediatricsPortal;
 
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 import javafx.application.Application;
@@ -34,7 +37,6 @@ public class NurseView {
 	private ComboBox<String> patientSelect; //maybe make it a text field instead
 	private TextArea allergyTA, healthConcernTA, healthHistoryTA;
 	private GridPane vitalPanes;
-	private String patientCurrent;
 	
 	public NurseView() {
 		mainPane = new VBox();
@@ -104,8 +106,7 @@ public class NurseView {
 	
 	private void patientSelect() {
 		patientSelPane = new HBox(2);
-		patientCurrent = "Bob Marley";
-		currentPatient = new Label("Current Patient: " + patientCurrent);
+		currentPatient = new Label("<No Patient Selected>");
 		
 		
 		patientSelectLabel = new Label("Select a Patient");
@@ -140,7 +141,7 @@ public class NurseView {
 		patientContactInfoText.setMinHeight(27);
 		patientContactInfoText.setMaxHeight(27);
 		
-		patientContactInfoText.setText("213-332-9131");
+		patientContactInfoText.setText("");
 		
 		patientContact.setMargin(patInfoLabel, new Insets(3,5,2,5));
 		patientSelPane.setPadding(new Insets(10,0,0,0));
@@ -153,6 +154,7 @@ public class NurseView {
                 "-fx-border-width: 1;\n" ;
 		patientContact.setStyle(contactLayout);
 		currentPatientPane.setStyle(contactLayout);
+		choosePatientButton.setOnAction(new ButtonHandler());
 		
 		currentPatientPane.getChildren().addAll(currentPatient);
 		topLeftPane.getChildren().addAll(currentPatientPane, patientContact);
@@ -176,6 +178,7 @@ public class NurseView {
 			count +=1;
 		}
 	}
+
 
 	private void vitalPaneFormatting() {
 		weightLabel = new Label("Weight (lbs):	");
@@ -277,6 +280,7 @@ public class NurseView {
 		submitButton = new Button("Submit Form");
 		cancelButton = new Button("Cancel");
 		
+		submitButton.setOnAction(null);
 		bottomPane.getChildren().addAll(submitButton, cancelButton);
 		
 	}
@@ -333,6 +337,10 @@ public class NurseView {
 	
 	private void buttonHandler() {
 		logoutButton.setOnAction(new ButtonHandler());
+		submitButton.setOnAction(new ButtonHandler());
+		healthIssButton.setOnAction(new ButtonHandler());
+		medButton.setOnAction(new ButtonHandler());
+		immuButton.setOnAction(new ButtonHandler());
 	}
 	
 	public Scene getScene() {
@@ -352,6 +360,98 @@ public class NurseView {
 					newStage.setScene(backToLogin.getScene());
 				}
 			}
+			else if(source == submitButton) {
+				collectData();
+			}
+			else if (source == choosePatientButton) {
+				System.out.println("choose patient pressed");
+				try {
+					numberSetting();
+				} catch(FileNotFoundException g) {
+					System.out.println("error");
+				}
+			}
+			else {
+				try {
+					healthHistoryTA.setText(getter(source));
+					
+					
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
+	private void numberSetting()throws FileNotFoundException{
+		//String data = patientWeight.getText() + "\n" +  patientHeight.getText()+ "\n" +  patientTemp.getText() + "\n" +  patientBlood.getText()+"\n"+ "Allergies:\n" + allergyTA.getText() + "\n" +  "Health Concerns\n"+ healthConcernTA.getText();
+		String information = patientSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String username =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		currentPatient.setText(LastName + ", " + firstName.substring(0,4));
+		
+		String dir = System.getProperty("user.dir") + "\\users\\Patient";
+		File file = new File(dir + "\\" + username + ".txt");
+		
+		Scanner scnr = new Scanner(file);
+		int count = 0;
+		while (count <3) {
+			scnr.nextLine();
+			count ++;
+		}
+		patientContactInfoText.setText(scnr.nextLine());
+	}
+	private String getter (Object source) throws FileNotFoundException {
+		String info = "";
+		String information = patientSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String username =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		currentPatient.setText(LastName + ", " + firstName.substring(0,4));
+		
+		String dir = System.getProperty("user.dir") + "\\users\\Patient";
+		File file = new File(dir + "\\" + username + ".txt");
+		Scanner scnr = new Scanner(file);
+		while(scnr.hasNextLine()) {
+			info = info + "\n" + scnr.nextLine();
+		}
+		if(source == healthIssButton) {
+			HRTypeLabel.setText("Health Issues");
+			
+			info = info.substring(info.indexOf("health issues")+ "health issues\n".length(), info.indexOf("medication"));
+		}
+		else if(source == medButton) {
+			HRTypeLabel.setText("Medications");
+			info = info.substring(info.indexOf("medication") + "medication\n".length());
+		}
+		else if(source == immuButton) {
+			HRTypeLabel.setText("Immunizations");
+			info = info.substring(info.indexOf("immunization")+"immunization\n".length(), info.indexOf("health issues"));
+		}
+		HRTypeLabel.setTextFill(Color.BLUE);
+		return info;
+	}
+	public void collectData() {
+		String data = patientWeight.getText() + "\n" +  patientHeight.getText()+ "\n" +  patientTemp.getText() + "\n" +  patientBlood.getText()+"\n"+ "Allergies:\n" + allergyTA.getText() + "\n" +  "Health Concerns\n"+ healthConcernTA.getText();
+		String information = patientSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String username =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		
+		String dir = System.getProperty("user.dir") + "\\users\\Patient";
+		File file = new File(dir + "\\" + username + "_Vitals.txt");
+		
+		try {
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(data);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+	}
+}
 }

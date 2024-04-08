@@ -27,10 +27,10 @@ import javafx.scene.layout.*;
 public class createAccount {
 	private Button confirmAccountButton, logout, immuSubmit, healthIssSubmit, medSubmit, cancel1, cancel2, cancel3, delete, cancel4;
 	private Label titleLabel, passwordTitle, recordHealthLabel, immuLabel, healthIssLabel, medLabel, nameLabel, dobLabel, userLabel;
-	private Label healthLabel, immuLabel2, healthIssLabel2, medLabel2, passwordLabel, reEnterLabel;
+	private Label healthLabel, immuLabel2, healthIssLabel2, medLabel2, passwordLabel, reEnterLabel, numberLabel;
 	private Label deleteLabel, date;
 	private Label errorMess1, errorMess2;
-	private TextField passwordTF, reEnterTF, healthCareVeriTF, immuTF, healthIssTF, medTF, date1TF, date2TF, date3TF, date4TF, deleteTF;
+	private TextField passwordTF, reEnterTF, healthCareVeriTF, immuTF, healthIssTF, medTF, date1TF, date2TF, date3TF, date4TF, deleteTF, numberTF;
 	private TextArea immunizationsTA, healthIssTA, medTA;
 	private BorderPane newAccountUI;
 	private Scene accountScene;
@@ -276,18 +276,26 @@ public class createAccount {
 		healthCB = new ComboBox();
 		healthCB.getItems().addAll("Immunizations", "Health Issues", "Medications");
 		healthCB.setValue("Select");
+		numberLabel = new Label("Number:");
+		numberTF = new TextField();
 		
 		errorMess2 = new Label("");
 		errorMess2.setFont(new Font("Comic Sans MS", 12));
 		errorMess2.setTextFill(Color.RED);
 		errorMess2.setPadding(new Insets(10,0,0,10));
 		
-		immu = "";
-		healthIss = "";
-		med = "";
+		immu = "None";
+		healthIss = "None";
+		med = "None";
 		
 		
 		fillOutPane.setMargin(recordHealthLabel, new Insets(0,10,0,5));
+		
+		HBox number = new HBox();
+		number.getChildren().addAll(numberLabel, numberTF);
+		fillOutPane.setMargin(number, new Insets(1,10,1,10));
+		numberTF.setPromptText("NNNNNNNNNN");
+		number.setSpacing(10);
 		
 		HBox label = new HBox();
 		label.getChildren().addAll(immuLabel2, date);
@@ -338,6 +346,8 @@ public class createAccount {
 		date3TF.setPromptText("MM/DD/YYYY");
 		date4TF.setPromptText("MM/DD/YYYY");
 		
+		numberLabel.setFont(new Font("Comic Sans MS", 12));
+		numberLabel.setStyle("-fx-font-weight: bold");
 		
 		recordHealthLabel.setFont(new Font("Comic Sans MS", 14));
 		recordHealthLabel.setStyle("-fx-font-weight: bold");
@@ -362,7 +372,7 @@ public class createAccount {
 		
 
 		 
-		fillOutPane.getChildren().addAll(recordHealthLabel, label, immu,buttons1, healthIssLabel2, healthIss, buttons2, medLabel2, med, buttons3, deleteLabel, deletion, buttons4, errorMess2);
+		fillOutPane.getChildren().addAll(recordHealthLabel,number, label, immu,buttons1, healthIssLabel2, healthIss, buttons2, medLabel2, med, buttons3, deleteLabel, deletion, buttons4, errorMess2);
 	}
 	
 	private void buttonHandling() {
@@ -377,10 +387,14 @@ public class createAccount {
 		public void handle(ActionEvent e) {
 			Object source = e.getSource();
 			if (source == confirmAccountButton) {
-				if (passwordTF.getText().equals("") || reEnterTF.getText().equals("")) {
+				if (passwordTF.getText().equals("") || reEnterTF.getText().equals("") || numberTF.getText().equals("")) {
 					System.out.println("empty");
 					errorMess1.setText("Invalid Password");
-				} else if (passwordTF.getText().length()<8) {
+				} else if (numberTF.getText().length()!=10) {
+					errorMess1.setText("Invalid phone number");
+				} else if (!phoneChecker(numberTF.getText())) {
+					errorMess1.setText("Invalid phone number");
+				}else if (passwordTF.getText().length()<8) {
 					errorMess1.setText("Too little characters");
 				} else if (!specialCharChecker(passwordTF.getText())) {
 					errorMess1.setText("No special characters");
@@ -420,6 +434,9 @@ public class createAccount {
 				else {
 					errorMess2.setText("");
 					System.out.println("immunizations submitted");
+					if (immu.equals("None")) {
+						immu="";
+					}
 					immu = immu + date1TF.getText() + " " + immuTF.getText() +"\n";
 					date1TF.setText("");
 					immuTF.setText("");
@@ -446,6 +463,9 @@ public class createAccount {
 				else {
 					errorMess2.setText("");
 					System.out.println("health issues submitted");
+					if (healthIss.equals("None")) {
+						healthIss="";
+					}
 					healthIss = healthIss+date2TF.getText() + " " + healthIssTF.getText()+"\n";
 					date2TF.setText("");
 					healthIssTF.setText("");
@@ -472,6 +492,9 @@ public class createAccount {
 				else {
 					errorMess2.setText("");
 					System.out.println("medications submitted");
+					if (med.equals("None")) {
+						med="";
+					}
 					med = med+date3TF.getText() + " " + medTF.getText()+"\n";
 					date3TF.setText("");
 					medTF.setText("");
@@ -532,8 +555,18 @@ public class createAccount {
 			}//end of button if statements
 		}//end of handle method
 	} // end of button handler event class
-	
 
+	private boolean phoneChecker(String number) {
+		for (int i = 0; i<number.length(); i++) {
+			if (Character.isDigit(number.charAt(i))) {
+				continue;
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	private boolean specialCharChecker(String placeholder) {
 		for (int i = 0; i<placeholder.length(); i++) {
 			if (!Character.isDigit(placeholder.charAt(i))  && !Character.isLetter(placeholder.charAt(i)) ) {
@@ -587,7 +620,7 @@ public class createAccount {
 				FileWriter fw = new FileWriter(file.getAbsoluteFile());
 				FileWriter all = new FileWriter(patients.getAbsoluteFile(), true);
 	            BufferedWriter bw = new BufferedWriter(fw);
-	            bw.write(first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n" + dob  + "\nimmunization\n" + immu + "\nhealth issues\n" + healthIss+ "\nmedication\n" + med);
+	            bw.write(first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n"+numberTF.getText()+"\n" + dob  + "\nimmunization\n" + immu + "\nhealth issues\n" + healthIss+ "\nmedication\n" + med);
 	            bw.close();
 	            BufferedWriter bdub = new BufferedWriter(all);
 	            bdub.append(first + " " + last + " " + dob + "\n" + username + "\n");
