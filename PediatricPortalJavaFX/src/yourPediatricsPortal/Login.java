@@ -1,6 +1,7 @@
 package yourPediatricsPortal;
 
 import javafx.application.Application;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -16,6 +17,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import yourPediatricsPortal.DoctorView;
 import yourPediatricsPortal.NurseView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 
 public class Login{
@@ -287,6 +292,16 @@ public class Login{
 	}
 	
 	private boolean authentication (String name_input, String pass_input) {
+		//read from user accounts file
+		try {
+			File user_account = new File("user_accounts.txt");
+			Scanner reader = new Scanner(user_account);
+			while (reader.hasNextLine()) {
+				String line = reader.nextLine();
+				
+			}
+		}
+		
 		return false;
 		
 	}
