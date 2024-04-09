@@ -1,6 +1,7 @@
 package yourPediatricsPortal;
 
 import javafx.application.Application;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -16,6 +17,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import yourPediatricsPortal.DoctorView;
 import yourPediatricsPortal.NurseView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 
 public class Login{
@@ -232,8 +240,9 @@ public class Login{
 				catch(Exception exception) {
 					System.out.println("Error");
 				}
-			} else if (source == loginButton) {
+			} else if (source == loginButton && authentication() ) {
 				if (roleSelectCB.getValue().equals("Doctor")) {
+					
 					System.out.println("doctor select");
 					DoctorView doctorUI = new DoctorView();
 					Window newWindow = scene.getWindow();
@@ -257,7 +266,12 @@ public class Login{
 				}
 				
 			} else {
+				
 				System.out.print("Something weird happened");
+				Alert login_alert = new Alert(AlertType.ERROR);
+				login_alert.setContentText("Wrong username and/or password.");
+				login_alert.showAndWait();
+				
 			}
 			
 		}
@@ -284,5 +298,54 @@ public class Login{
 			}
 		}
 		return false;
+	}
+	//TextField firstNameTF, lastNameTF, dobTF, usernameTF, passwordTF;
+	private boolean authentication () {
+		//read from user accounts file
+			//find the right folder
+			String path = "";
+			if (roleSelectCB.getValue().equals("Patient")) {
+				path = "./users" + "/Patient/" +  usernameTF.getText() + ".txt";
+				System.out.println(path);
+			}
+			else if (roleSelectCB.getValue().equals("Nurse")) {
+				path = "./users" + "/Nurse/" +  usernameTF.getText() + ".txt";
+			
+			}
+			else {
+				path = "./users" + "/Doctor/" +  usernameTF.getText() + ".txt";
+			}
+			
+			File user_file = new File(path);
+
+			if (user_file.exists()) {
+				System.out.println("TRUE");
+				Scanner reader;
+				try {
+					reader = new Scanner(user_file);
+					int line_number = 0;
+					while (reader.hasNextLine()) {
+						String line = reader.nextLine();
+						if (line_number == 2) {
+							reader.close();
+							System.out.println(line);
+							return line.equals(passwordTF.getText());
+				
+						}
+						line_number++;
+					}
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+			else {
+				return false;
+			}
+				
+
+		
+		
+		return false;
+		
 	}
 }
