@@ -235,7 +235,7 @@ public class Login{
 			} else if (source == loginButton) {
 				if (roleSelectCB.getValue().equals("Doctor")) {
 					System.out.println("doctor select");
-					DoctorView doctorUI = new DoctorView();
+					DoctorView doctorUI = new DoctorView(usernameTF.getText());
 					Window newWindow = scene.getWindow();
 					if (newWindow instanceof Stage) {
 						Stage newStage = (Stage) newWindow;
