@@ -22,6 +22,7 @@ import javafx.scene.image.ImageView;
 import yourPediatricsPortal.DoctorView;
 import yourPediatricsPortal.NurseView;
 
+import yourPediatricsPortal.PatientView;
 
 public class Login{
 	//private VBox vbox1;
@@ -257,7 +258,12 @@ public class Login{
 						}
 						
 					} else if (roleSelectCB.getValue().equals("Patient")){
-						System.out.println("patient select");
+						PatientView patientUI = new PatientView(usernameTF.getText());
+						Window newWindow = scene.getWindow();
+						if (newWindow instanceof Stage) {
+							Stage newStage = (Stage) newWindow;
+							newStage.setScene(patientUI.getScene());
+						}
 					}
 				}
 				 else {
@@ -299,19 +305,32 @@ public class Login{
 					int line_number = 0;
 					while (reader.hasNextLine()) {
 						String line = reader.nextLine();
-						if (line_number == 3) {
-							reader.close();
-							System.out.println(line);
-							return line.equals(passwordTF.getText());
-
-						}
-						if (line_number==0) {
-							System.out.println(line);
-							if (!line.equals(roleSelectCB.getValue())) {
+						if (roleSelectCB.getValue().equals("Patient")) {
+							if (line_number == 2) {
 								reader.close();
-								System.out.println("urmom");
-								return false;
+								System.out.println("Password"+line);
+								return line.equals(passwordTF.getText());
+
 							}
+						} else {
+							if (line_number == 3) {
+								reader.close();
+								System.out.println("Password"+line);
+								return line.equals(passwordTF.getText());
+
+							}
+						}
+						
+						if (line_number==0) {
+							if (!roleSelectCB.getValue().equals("Patient")) {
+								System.out.println(line);
+								if (!line.equals(roleSelectCB.getValue())) {
+									reader.close();
+									System.out.println("urmom");
+									return false;
+								}
+							}
+							
 						}
 						line_number++;
 					}

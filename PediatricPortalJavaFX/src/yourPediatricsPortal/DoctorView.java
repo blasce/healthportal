@@ -724,13 +724,12 @@ public class DoctorView {
 		
 		String data = dateTF.getText() + "\n" +summTA.getText();
 		String dir = System.getProperty("user.dir") + "\\users\\Patient";
-		String date = dateTF.getText().substring(0,2) + dateTF.getText().substring(3,5)+dateTF.getText().substring(8,10);
-		File file = new File(dir + "\\" + username + "_"+date+".txt");
+		File file = new File(dir + "\\" + username + "_"+"Findings_Summary"+".txt");
 		
 		try {
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(data);
+            bw.append(data);
             bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
