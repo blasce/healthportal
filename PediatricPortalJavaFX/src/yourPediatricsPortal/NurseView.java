@@ -82,9 +82,14 @@ public class NurseView {
                 "-fx-background-color: #9abaed;\n";
 		topPane.setStyle(topPaneLayout);
 		topPane.setMargin(titleLabel, new Insets(5,10,10,0));
-		topPane.setMargin(logoutButton, new Insets(15,0,0,960));
+		topPane.setMargin(usernameLabel, new Insets(20,10,0,850));
+		topPane.setMargin(logoutButton, new Insets(15,0,0,5));
+		
+		usernameLabel.setFont(new Font("Comic Sans MS", 13));
+		usernameLabel.setStyle("-fx-font-weight: bold");
 		
 		topPane.getChildren().add(titleLabel);
+		topPane.getChildren().add(usernameLabel);
 		topPane.getChildren().add(logoutButton);
 	}
 	
@@ -518,7 +523,7 @@ public class NurseView {
 				}
 			} else if (source == messageButton) {
 				
-				loggedInText = texts.getText() + "Nurse: " + textingTA.getText() + "\n";	
+				loggedInText = texts.getText() + "Nurse " + usernameString.substring(0,3)+ ": "+ textingTA.getText() + "\n";	
 				texts.setText(loggedInText);
 				if(messageSelect.getValue()!= null) {
 					collectConversation(usernameString);
@@ -549,6 +554,14 @@ public class NurseView {
 	
 	private void collectConversation(String nurse) {
 		String information = messageSelect.getValue();
+		int tracker = 0;
+		if (information.contains("Nurse")) {
+			information = information.substring(6, information.length());
+			tracker = 1;
+		} else if (information.contains("Doctor")) {
+			information = information.substring(7, information.length());
+			tracker = 2;
+		}
 		String firstName = information.substring(0, information.indexOf(" "));
 		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
 		String dob = information.substring(information.lastIndexOf(" ") + 1);
@@ -559,7 +572,20 @@ public class NurseView {
 		if(!location.exists()) {
 			location.mkdirs();
 		}
-		File file = new File(dir + "\\" + nurse + "_" + patient + ".txt");
+		File file;
+		if (tracker == 1) {
+			if (nurse.compareTo(patient)<0) {
+				file = new File(dir + "\\" + nurse + "_" + patient + ".txt");
+			} else {
+				file = new File(dir + "\\" + patient + "_" + nurse + ".txt");
+			}
+			
+		} else if (tracker == 2) {
+			file = new File(dir + "\\" + patient + "_" + nurse + ".txt");
+		} else {
+			file = new File(dir + "\\" + nurse + "_" + patient + ".txt");
+		}
+		
 		try {
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
             BufferedWriter bw = new BufferedWriter(fw);
@@ -572,6 +598,14 @@ public class NurseView {
 	private String findConversation(String nurse) throws FileNotFoundException {
 		String info = "";
 		String information = messageSelect.getValue();
+		int tracker = 0;
+		if (information.contains("Nurse")) {
+			information = information.substring(6, information.length());
+			tracker = 1;
+		} else if (information.contains("Doctor")) {
+			information = information.substring(7, information.length());
+			tracker = 2;
+		}
 		String firstName = information.substring(0, information.indexOf(" "));
 		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
 		String dob = information.substring(information.lastIndexOf(" ") + 1);
@@ -579,7 +613,19 @@ public class NurseView {
 		
 		String dir = System.getProperty("user.dir") + "\\conversations";
 		File location = new File(dir);
-		File file = new File(dir + "\\" + nurse + "_" + patient + ".txt");
+		File file;
+		if (tracker == 1) {
+			if (nurse.compareTo(patient)<0) {
+				file = new File(dir + "\\" + nurse + "_" + patient + ".txt");
+			} else {
+				file = new File(dir + "\\" + patient + "_" + nurse + ".txt");
+			}
+		} else if (tracker == 2) {
+			file = new File(dir + "\\" + patient + "_" + nurse + ".txt");
+		} else {
+			file = new File(dir + "\\" + nurse + "_" + patient + ".txt");
+		}
+		
 		if(!location.exists()) {
 			location.mkdirs();
 		

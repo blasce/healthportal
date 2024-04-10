@@ -85,7 +85,7 @@ public class DoctorView {
                 "-fx-background-color: #9abaed;\n";
 		topPane.setStyle(topPaneLayout);
 		topPane.setMargin(titleLabel, new Insets(5,10,10,0));
-		usernameLabel.setPadding(new Insets(19,0,0,900));
+		topPane.setMargin(usernameLabel, new Insets(20,10,0,850));
 		
 		usernameLabel.setFont(new Font("Comic Sans MS", 13));
 		usernameLabel.setStyle("-fx-font-weight: bold");
@@ -599,7 +599,8 @@ public class DoctorView {
 				}
 			} else if (source == messageButton) {
 				
-				loggedInText = texts.getText() + "Doctor: " + textingTA.getText() + "\n";	
+				
+				loggedInText = texts.getText() + "Doctor " + usernameString.substring(0,3) + ": " + textingTA.getText() + "\n";	
 				texts.setText(loggedInText);
 				if(messageSelect.getValue()!= null) {
 					collectConversation(usernameString);
@@ -715,17 +716,37 @@ public class DoctorView {
 	
 	private void collectConversation(String doctor) {
 		String information = messageSelect.getValue();
-		String firstName = information.substring(0, information.indexOf(" "));
-		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
-		String dob = information.substring(information.lastIndexOf(" ") + 1);
-		String patient = firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		String firstName = "";
+		String LastName = "";
+		String dob = "";
+		String user = "";
+		int tracker = 0;
+		if (information.contains("Nurse")) {
+			information = information.substring(6, information.length());
+		} else if (information.contains("Doctor")) {
+			information = information.substring(7, information.length());
+			tracker = 1;
+		}
+		firstName = information.substring(0, information.indexOf(" "));
+		LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		dob = information.substring(information.lastIndexOf(" ") + 1);
+		user = firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
 		String convo = texts.getText();
 		String dir = System.getProperty("user.dir") + "\\conversations";
 		File location = new File(dir);
 		if(!location.exists()) {
 			location.mkdirs();
 		}
-		File file = new File(dir + "\\" + doctor + "_" + patient + ".txt");
+		File file;
+		if (tracker ==1) {
+			if (doctor.compareTo(user) <0) {
+				file = new File(dir + "\\" + doctor + "_" + user + ".txt");
+			} else {
+				file = new File(dir + "\\" + user + "_" + doctor + ".txt");
+			}
+		} else {
+			file = new File(dir + "\\" + doctor + "_" + user + ".txt");
+		}
 		try {
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
             BufferedWriter bw = new BufferedWriter(fw);
@@ -738,6 +759,13 @@ public class DoctorView {
 	private String findConversation(String doctor) throws FileNotFoundException {
 		String info = "";
 		String information = messageSelect.getValue();
+		int tracker = 0;
+		if (information.contains("Nurse")) {
+			information = information.substring(6, information.length());
+		} else if (information.contains("Doctor")) {
+			information = information.substring(7, information.length());
+			tracker = 1;
+		}
 		String firstName = information.substring(0, information.indexOf(" "));
 		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
 		String dob = information.substring(information.lastIndexOf(" ") + 1);
@@ -745,7 +773,18 @@ public class DoctorView {
 		
 		String dir = System.getProperty("user.dir") + "\\conversations";
 		File location = new File(dir);
-		File file = new File(dir + "\\" + doctor + "_" + patient + ".txt");
+		
+		File file;
+		if (tracker ==1) {
+			if (doctor.compareTo(patient) <0) {
+				file = new File(dir + "\\" + doctor + "_" + patient + ".txt");
+			} else {
+				file = new File(dir + "\\" + patient + "_" + doctor + ".txt");
+			}
+		} else {
+			file = new File(dir + "\\" + doctor + "_" + patient + ".txt");
+		}
+		
 		if(!location.exists()) {
 			location.mkdirs();
 		
