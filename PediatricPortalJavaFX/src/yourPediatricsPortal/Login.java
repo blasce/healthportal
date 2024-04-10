@@ -1,5 +1,9 @@
 package yourPediatricsPortal;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.scene.text.Font;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
@@ -209,7 +214,7 @@ public class Login{
 
 					}
 					else if(hasLetter(dobTF.getText())) {
-						createError.setText("SDate of birth is not entered correctly.\nEnter in this format MM/DD/YYYY");
+						createError.setText("Date of birth is not entered correctly.\nEnter in this format MM/DD/YYYY");
 						createError.setTextFill(Color.RED);
 					}
 					else { // switches to new page
@@ -233,27 +238,33 @@ public class Login{
 					System.out.println("Error");
 				}
 			} else if (source == loginButton) {
-				if (roleSelectCB.getValue().equals("Doctor")) {
-					System.out.println("doctor select");
-					DoctorView doctorUI = new DoctorView();
-					Window newWindow = scene.getWindow();
-					if (newWindow instanceof Stage) {
-						Stage newStage = (Stage) newWindow;
-						newStage.setScene(doctorUI.getScene());
+				if (authentication()) {
+					if (roleSelectCB.getValue().equals("Doctor")) {
+						System.out.println("doctor select");
+						DoctorView doctorUI = new DoctorView(usernameTF.getText());
+						Window newWindow = scene.getWindow();
+						if (newWindow instanceof Stage) {
+							Stage newStage = (Stage) newWindow;
+							newStage.setScene(doctorUI.getScene());
+						}
+					} else if (roleSelectCB.getValue().equals("Nurse")) {
+						System.out.println("nurse select");
+						NurseView nurseUI = new NurseView(usernameTF.getText());
+						Window newWindow = scene.getWindow();
+						if (newWindow instanceof Stage) {
+							Stage newStage = (Stage) newWindow;
+							newStage.setScene(nurseUI.getScene());
+						}
+						
+					} else if (roleSelectCB.getValue().equals("Patient")){
+						System.out.println("patient select");
 					}
-				} else if (roleSelectCB.getValue().equals("Nurse")) {
-					System.out.println("nurse select");
-					NurseView nurseUI = new NurseView();
-					Window newWindow = scene.getWindow();
-					if (newWindow instanceof Stage) {
-						Stage newStage = (Stage) newWindow;
-						newStage.setScene(nurseUI.getScene());
-					}
-					
-				} else if (roleSelectCB.getValue().equals("Patient")){
-					System.out.println("patient select");
-				} else {
-					System.out.println("error");
+				}
+				 else {
+					System.out.print("Something weird happened");
+					Alert login_alert = new Alert(AlertType.ERROR);
+					login_alert.setContentText("Wrong username, password, and/or role.");
+					login_alert.showAndWait();
 				}
 				
 			} else {
@@ -263,6 +274,63 @@ public class Login{
 		}
 	
 	}
+	
+	private boolean authentication () {
+		//read from user accounts file
+			//find the right folder
+			String dir = "";
+			if (roleSelectCB.getValue().equals("Patient")) {
+				dir= System.getProperty("user.dir") + "\\users\\Patient\\"+ usernameTF.getText() + ".txt";
+				System.out.println(dir);
+			}
+			else if (roleSelectCB.getValue().equals("Nurse") || roleSelectCB.getValue().equals("Doctor")) {
+				dir = System.getProperty("user.dir") + "\\users\\healthcare professionals\\"+ usernameTF.getText() + ".txt";
+				System.out.println(dir);
+			}
+
+			File user_file = new File(dir);
+
+			System.out.println("hello");
+			if (user_file.exists()) {
+				System.out.println("TRUE");
+				Scanner reader;
+				try {
+					reader = new Scanner(user_file);
+					int line_number = 0;
+					while (reader.hasNextLine()) {
+						String line = reader.nextLine();
+						if (line_number == 3) {
+							reader.close();
+							System.out.println(line);
+							return line.equals(passwordTF.getText());
+
+						}
+						if (line_number==0) {
+							System.out.println(line);
+							if (!line.equals(roleSelectCB.getValue())) {
+								reader.close();
+								System.out.println("urmom");
+								return false;
+							}
+						}
+						line_number++;
+					}
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+			else {
+				return false;
+			}
+
+
+
+
+		return false;
+
+	}
+	
+	
 	private boolean hasNumber(String s) { //checks if there is a number in a string
 		boolean num = false;
 		for(int i = 0; i < s.length(); i++) {
