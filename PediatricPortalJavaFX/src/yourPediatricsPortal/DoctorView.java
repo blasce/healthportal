@@ -1,7 +1,10 @@
 package yourPediatricsPortal;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 import javafx.application.Application;
@@ -27,25 +30,30 @@ public class DoctorView {
 	private Label weightLabel, tempLabel, heightLabel, bloodLabel, patientWeight, patientTemp, patientHeight, patientBlood, currentPatient, patInfoLabel;
 	private Label userLabel;
 	private Button healthIssButton, medButton, immuButton, alleButton, healthConcButton, presButton, cancelButton, cancel2Button, logoutButton, sumButton, choosePatientButton;
-	private Button addButton, messageButton;
+	private Button chooseTextButton, messageButton;
 	private ComboBox<String> patientSelect; //maybe make it a text field instead
 	private ComboBox<String> messageSelect;
-	private TextArea prescribeTA, summTA, patTA, healthHistoryTA, patientContactInfoText;
+	private TextArea prescribeTA, summTA, patTA, healthHistoryTA, patientContactInfoText, texts;
 	private TextArea textingTA;
-	private TextField  addressTF, dateTF;
+	private TextField  addressTF, dateTF, datePresTF;
 	private VBox mainPane, rightPane, leftPane, aCbuttonPane, bottomLeftPane, topRightPane, HRButtonsPane, displayHisPane;
-	private VBox listOfUsers, displayText, texting;
+	private VBox listOfUsers, displayText;
 	private HBox doctorUI, topPane, aCPane, recordsPane, currentPatientPane, topLeftPane, patientSelPane, patientContact, userLabelPane;
 	private Scene scene;
 	private GridPane vitalPanes;
 	private String patientCurrent;
 	private BorderPane messagePane;
 	private ScrollPane usersScroll, messageScroll;
+	private Label usernameLabel, errMess1, errMess2;
+	private String usernameString;
+	private String loggedInText;
 	
-	public DoctorView() {
+	public DoctorView(String username) {
 		mainPane = new VBox();
 		doctorUI = new HBox();
 		
+		this.usernameLabel = new Label(username);
+		this.usernameString = username;
 		top();
 		leftSide();
 		rightSide();
@@ -66,6 +74,7 @@ public class DoctorView {
 		titleLabel.setStyle("-fx-font-weight: bold");
 		titleLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		
+		
 		ImageView imageLogout = new ImageView ("https://static-00.iconduck.com/assets.00/log-out-outline-icon-512x432-rbmppekf.png");
 		imageLogout.setFitHeight(20);
 		imageLogout.setFitWidth(20);
@@ -76,9 +85,14 @@ public class DoctorView {
                 "-fx-background-color: #9abaed;\n";
 		topPane.setStyle(topPaneLayout);
 		topPane.setMargin(titleLabel, new Insets(5,10,10,0));
-		topPane.setMargin(logoutButton, new Insets(15,0,0,960));
+		usernameLabel.setPadding(new Insets(19,0,0,900));
+		
+		usernameLabel.setFont(new Font("Comic Sans MS", 13));
+		usernameLabel.setStyle("-fx-font-weight: bold");
+		topPane.setMargin(logoutButton, new Insets(15,0,0,10));
 		
 		topPane.getChildren().add(titleLabel);
+		topPane.getChildren().add(usernameLabel);
 		topPane.getChildren().add(logoutButton);
 		
 	}
@@ -298,13 +312,21 @@ public class DoctorView {
 		prescribeTA = new TextArea();
 		dateTF = new TextField();
 		summTA = new TextArea();
-		
+		errMess1 = new Label("");
+		errMess2 = new Label("");
 		// NOTE will take pharmacy address from user records
 		addressTF.setPromptText("<Pharmacy Address Here>");
 		addressTF.setEditable(false);
+		datePresTF = new TextField();
+		
+		datePresTF.setPromptText("MM/DD/YYY");
 		
 		dateTF.setPromptText("<Place date in format: MM/DD/YYYY>");
 		
+		errMess1.setFont(new Font("Comic Sans MS", 13));
+		errMess1.setStyle("-fx-font-weight: bold");
+		errMess2.setFont(new Font("Comic Sans MS", 13));
+		errMess2.setStyle("-fx-font-weight: bold");
 		presLabel.setFont(new Font("Comic Sans MS", 13));
 		presLabel.setStyle("-fx-font-weight: bold");
 		
@@ -324,13 +346,13 @@ public class DoctorView {
 		presButton = new Button("Prescribe");
 		cancelButton = new Button("Cancel");
 		buttons.setSpacing(10);
-		buttons.getChildren().addAll(presButton, cancelButton);
+		buttons.getChildren().addAll(datePresTF, presButton, cancelButton, errMess1);
 		
 		HBox buttons2= new HBox();
 		sumButton = new Button("Submit Summary");
 		cancel2Button = new Button("Cancel");
 		buttons2.setSpacing(10);
-		buttons2.getChildren().addAll(sumButton,cancel2Button);
+		buttons2.getChildren().addAll(sumButton,cancel2Button, errMess2);
 		
 		bottomLeftPane.setSpacing(10);
 		bottomLeftPane.getChildren().addAll(presLabel,addressTF,  prescribeTA, buttons,dateTF, summTA, buttons2);
@@ -389,54 +411,88 @@ public class DoctorView {
 		HRButtonsPane.getChildren().addAll(healthIssButton, medButton,immuButton);
 	}
 	
+	
 	private void messageSystem() {
 		messagePane = new BorderPane();
 		usersScroll = new ScrollPane();
-		messageScroll = new ScrollPane();
 		userLabel = new Label("<No user selected>");
-		addButton = new Button("Add User");
+		chooseTextButton = new Button("Choose");
 		messageButton = new Button("Message");
 		textingTA = new TextArea();
 		userLabelPane = new HBox();
-		TextArea dummy = new TextArea();
+		texts = new TextArea();
 		
+		texts.setEditable(false);
+		String edit =  "-fx-background-color: #9abaed;\n";
+	
 		userLabelPane.getChildren().addAll(userLabel);
+		userLabelPane.setStyle(edit);
+		
+		
 		HBox message = new HBox();
-		message.getChildren().addAll(textingTA, messageButton);
+		message.getChildren().addAll(textingTA, messageButton);	
 		
 		messageSelect = new ComboBox<String>();
+		//messageSelect.set
 		try {
 			patientListing(messageSelect);
 		} catch(FileNotFoundException e) {
 			System.out.println("ERROR");
 		}
+		//message.setSpacing(10);
+		loggedInText = "";
 		
 		HBox newUser = new HBox();
-		newUser.getChildren().addAll(messageSelect, addButton);
+		newUser.getChildren().addAll(messageSelect, chooseTextButton);
+		newUser.setSpacing(10);
+		newUser.setPadding(new Insets(5,0,0,10));
 		
 		listOfUsers = new VBox();
 		listOfUsers.getChildren().addAll(newUser);
 		//TODO add for loop for each button
 		//maybe need arraylist of buttons!!!!!
 		
-		texting = new VBox();
-		texting.getChildren().addAll(dummy);
+		
 		//copy paste from text file, and make it look like old chat rooms
 		//example below
 		//Doctor: xxxx
 		//User: xxxx
 		
+		userLabel.setFont(new Font("Comic Sans MS", 12));
+		userLabel.setStyle("-fx-font-weight: bold");
+		
 		displayText = new VBox();
 		usersScroll = new ScrollPane(listOfUsers);
-		messageScroll = new ScrollPane(texting);
+		
+		usersScroll.setMinWidth(250);
+		usersScroll.setMaxWidth(250);
+		
+		messageSelect.setMinWidth(150);
+		messageSelect.setMaxWidth(150);
+		
+		userLabelPane.setPadding(new Insets(10,10,10,10));
+		displayText.getChildren().addAll(userLabelPane, texts, message);
+		messageButton.setPadding(new Insets(0,15,0,15));
+		
+		texts.setMaxHeight(300);
+		texts.setMinHeight(300);
+		textingTA.setMaxWidth(400);
+		textingTA.setMinWidth(400);
+		textingTA.setMaxHeight(40);
+		textingTA.setMinHeight(40);
+		
+		messageButton.setMaxHeight(40);
+		messageButton.setMinHeight(40);
+		String textLayout =  "-fx-border-color: black;\n" +
+                "-fx-border-width: 1;\n";
 		
 		
-		displayText.getChildren().addAll(usersScroll, messageScroll, message);
+		displayText.setStyle(textLayout);
+		usersScroll.setStyle(textLayout);
+		messagePane.setPadding(new Insets(10,10,10,20));
 		
-		
-		textingTA.setMaxWidth(300);
-		textingTA.setMaxHeight(10);
-		
+		messagePane.setMaxHeight(400);
+		messagePane.setMinHeight(400);
 		messagePane.setLeft(usersScroll);
 		messagePane.setCenter(displayText);
 		
@@ -447,6 +503,14 @@ public class DoctorView {
 		healthIssButton.setOnAction(new ButtonHandler());
 		medButton.setOnAction(new ButtonHandler());
 		immuButton.setOnAction(new ButtonHandler());
+		alleButton.setOnAction(new ButtonHandler());
+		healthConcButton.setOnAction(new ButtonHandler());
+		chooseTextButton.setOnAction(new ButtonHandler());
+		messageButton.setOnAction(new ButtonHandler());
+		presButton.setOnAction(new ButtonHandler());
+		sumButton.setOnAction(new ButtonHandler());
+		cancelButton.setOnAction(new ButtonHandler());
+		cancel2Button.setOnAction(new ButtonHandler());
 	}
 	
 	public Scene getScene() {
@@ -457,6 +521,7 @@ public class DoctorView {
 		public void handle(ActionEvent e) {
 			Object source = e.getSource();
 			if (source == logoutButton) {
+			
 				System.out.println("Logout pressed");
 				
 				Login backToLogin = new Login();
@@ -479,8 +544,67 @@ public class DoctorView {
 					vitalLabel.setText("Vitals NOT taken");
 					vitalLabel.setTextFill(Color.RED);
 					healthInfoLabel.setText("Health Info NOT taken");
-					vitalLabel.setTextFill(Color.RED);
+					healthInfoLabel.setTextFill(Color.RED);
 				}
+			} else if (source == alleButton || source == healthConcButton) {
+				try {
+					if (source == alleButton) {
+						System.out.println("Help");
+						vitalsGetter(alleButton);
+					} else {
+						vitalsGetter(healthConcButton);
+					}
+				}catch (FileNotFoundException e2) {
+					System.out.println("ERROR");
+				}
+			} else if (source == chooseTextButton) {
+				try {
+					if (messageSelect.getValue()!= null) {
+						String convo = findConversation(usernameString);
+						if(convo.length() >= texts.getText().length() || !convo.contains(texts.getText())) {
+							texts.setText(convo);
+							userLabel.setText(messageSelect.getValue());
+						}
+					}
+					
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			} else if (source == messageButton) {
+				
+				loggedInText = texts.getText() + "Doctor: " + textingTA.getText() + "\n";	
+				texts.setText(loggedInText);
+				if(messageSelect.getValue()!= null) {
+					collectConversation(usernameString);
+				}
+				textingTA.setText("");
+				
+			} else if (source == presButton) {
+				if (prescribeTA.getText().equals("") || datePresTF.getText().equals("")) {
+					errMess1.setText("Empty Input");
+				} else {
+					prescribing();
+					errMess1.setText("");
+					datePresTF.setText("");
+					prescribeTA.setText("");
+				}
+				
+			} else if (source == sumButton) {
+				if (dateTF.getText().equals("") || summTA.getText().equals("")) {
+					errMess2.setText("Emtpy Input");
+				} else {
+					visitSumm();
+					dateTF.setText("");
+					summTA.setText("");
+					errMess2.setText("");
+				}
+			} else if (source == cancelButton) {
+				datePresTF.setText("");
+				prescribeTA.setText("");
+			} else if (source == cancel2Button) {
+				dateTF.setText("");
+				summTA.setText("");
 			}
 			else {
 				try {
@@ -492,6 +616,131 @@ public class DoctorView {
 			}
 			
 		}//end of handle
+	}
+	private void prescribing() {
+		//add to end of medications for each patient
+		String data = datePresTF.getText() + " "+ prescribeTA.getText() + "\n";
+		String patientInfo = "";
+		String none = "";
+		String information = patientSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String username =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		
+		
+		String dir = System.getProperty("user.dir") + "\\users\\Patient\\"+username+".txt";
+		File file = new File(dir);
+		Scanner scnr;
+		try {
+			scnr = new Scanner(file);
+			while(scnr.hasNextLine()) {
+				patientInfo = patientInfo + "\n" + scnr.nextLine();
+				
+			}
+			System.out.println(patientInfo);
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		none = patientInfo.substring(patientInfo.indexOf("medication") + "medication\n".length());
+		patientInfo = patientInfo.substring(1, patientInfo.indexOf("medication") + "medication\n".length()) + data + "\n";
+		try {
+            if (none.contains("None")) {
+            	FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
+            	bw.write(patientInfo);
+            	bw.close();
+            } else {
+            	FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+                BufferedWriter bw = new BufferedWriter(fw);
+            	bw.write(data);
+            	bw.close();
+            }
+		}catch (IOException e) {
+			System.out.println("File not found");
+		}
+		
+	}
+	
+	private void visitSumm() {
+		String information = patientSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String username =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		
+		String data = dateTF.getText() + "\n" +summTA.getText();
+		String dir = System.getProperty("user.dir") + "\\users\\Patient";
+		String date = dateTF.getText().substring(0,2) + dateTF.getText().substring(3,5)+dateTF.getText().substring(8,10);
+		File file = new File(dir + "\\" + username + "_"+date+".txt");
+		
+		try {
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(data);
+            bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void collectConversation(String doctor) {
+		String information = messageSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String patient = firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		String convo = texts.getText();
+		String dir = System.getProperty("user.dir") + "\\conversations";
+		File location = new File(dir);
+		if(!location.exists()) {
+			location.mkdirs();
+		}
+		File file = new File(dir + "\\" + doctor + "_" + patient + ".txt");
+		try {
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(convo);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	private String findConversation(String doctor) throws FileNotFoundException {
+		String info = "";
+		String information = messageSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String patient =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		
+		String dir = System.getProperty("user.dir") + "\\conversations";
+		File location = new File(dir);
+		File file = new File(dir + "\\" + doctor + "_" + patient + ".txt");
+		if(!location.exists()) {
+			location.mkdirs();
+		
+		}
+		if (!file.exists()) {
+			try {
+				FileWriter fw = new FileWriter(file.getAbsoluteFile());
+	            BufferedWriter bw = new BufferedWriter(fw);
+	            bw.write("");
+	            bw.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		}
+			
+		Scanner scnr = new Scanner(file);
+		while(scnr.hasNextLine()) {
+			info = info + scnr.nextLine()+ "\n" ;
+		}
+		
+		return info;
 	}
 	private void numberSetting()throws FileNotFoundException{
 		//String data = patientWeight.getText() + "\n" +  patientHeight.getText()+ "\n" +  patientTemp.getText() + "\n" +  patientBlood.getText()+"\n"+ "Allergies:\n" + allergyTA.getText() + "\n" +  "Health Concerns\n"+ healthConcernTA.getText();
@@ -511,7 +760,10 @@ public class DoctorView {
 			scnr.nextLine();
 			count ++;
 		}
+		
 		patientContactInfoText.setText(scnr.nextLine());
+		scnr.nextLine();
+		addressTF.setText(scnr.nextLine());
 	}
 	private void vitals() throws FileNotFoundException {
 		String information = patientSelect.getValue();
@@ -560,5 +812,31 @@ public class DoctorView {
 		}
 		HRTypeLabel.setTextFill(Color.BLUE);
 		return info;
+	}
+
+	private void vitalsGetter(Object source) throws FileNotFoundException{
+		String information = patientSelect.getValue();
+		String firstName = information.substring(0, information.indexOf(" "));
+		String LastName = information.substring(information.indexOf(" ") + 1, information.lastIndexOf(" "));
+		String dob = information.substring(information.lastIndexOf(" ") + 1);
+		String username =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
+		
+		String dir = System.getProperty("user.dir") + "\\users\\Patient";
+		File file = new File(dir + "\\" + username + "_Vitals.txt");
+		Scanner scnr = new Scanner(file);
+		
+		String info = "";
+		while (scnr.hasNextLine()) {
+			info = info + "\n"+scnr.nextLine();
+		}
+		
+		if (source == alleButton) {
+			info = info.substring(info.indexOf("Allergies:\n")+ "Allergies:\n".length(), info.indexOf("Health Concerns\n"));
+			System.out.println(info);
+			patTA.setText(info);
+		} else if (source == healthConcButton) {
+			info = info.substring(info.indexOf("Health Concerns\n") + "Health Concerns\n".length());
+			patTA.setText(info);
+		}
 	}
 }

@@ -27,10 +27,10 @@ import javafx.scene.layout.*;
 public class createAccount {
 	private Button confirmAccountButton, logout, immuSubmit, healthIssSubmit, medSubmit, cancel1, cancel2, cancel3, delete, cancel4;
 	private Label titleLabel, passwordTitle, recordHealthLabel, immuLabel, healthIssLabel, medLabel, nameLabel, dobLabel, userLabel;
-	private Label healthLabel, immuLabel2, healthIssLabel2, medLabel2, passwordLabel, reEnterLabel, numberLabel;
+	private Label healthLabel, immuLabel2, healthIssLabel2, medLabel2, passwordLabel, reEnterLabel, numberLabel, pharmLabel;
 	private Label deleteLabel, date;
 	private Label errorMess1, errorMess2;
-	private TextField passwordTF, reEnterTF, healthCareVeriTF, immuTF, healthIssTF, medTF, date1TF, date2TF, date3TF, date4TF, deleteTF, numberTF;
+	private TextField passwordTF, reEnterTF, healthCareVeriTF, immuTF, healthIssTF, medTF, date1TF, date2TF, date3TF, date4TF, deleteTF, numberTF, pharmTF;
 	private TextArea immunizationsTA, healthIssTA, medTA;
 	private BorderPane newAccountUI;
 	private Scene accountScene;
@@ -38,6 +38,7 @@ public class createAccount {
 	private HBox topPane, midPane;
 	private String first, last, dob, role,username, immu, healthIss, med;
 	private ComboBox<String> healthCB;
+	private String verificationCode = "P3diatrics";
 	
 	public createAccount (String first, String last, String dob, String role) {
 		this.first = first;
@@ -278,6 +279,8 @@ public class createAccount {
 		healthCB.setValue("Select");
 		numberLabel = new Label("Number:");
 		numberTF = new TextField();
+		pharmLabel = new Label("Pharm:");
+		pharmTF = new TextField();
 		
 		errorMess2 = new Label("");
 		errorMess2.setFont(new Font("Comic Sans MS", 12));
@@ -296,6 +299,13 @@ public class createAccount {
 		fillOutPane.setMargin(number, new Insets(1,10,1,10));
 		numberTF.setPromptText("NNNNNNNNNN");
 		number.setSpacing(10);
+		
+		HBox pharmacy = new HBox();
+		pharmacy.getChildren().addAll(pharmLabel, pharmTF);
+		fillOutPane.setMargin(pharmacy, new Insets(1,10,1,10));
+		pharmLabel.setPadding(new Insets(0,7,0,0));
+		pharmTF.setPromptText("Pharm address");
+		pharmacy.setSpacing(10);
 		
 		HBox label = new HBox();
 		label.getChildren().addAll(immuLabel2, date);
@@ -348,7 +358,8 @@ public class createAccount {
 		
 		numberLabel.setFont(new Font("Comic Sans MS", 12));
 		numberLabel.setStyle("-fx-font-weight: bold");
-		
+		pharmLabel.setFont(new Font("Comic Sans MS", 12));
+		pharmLabel.setStyle("-fx-font-weight: bold");
 		recordHealthLabel.setFont(new Font("Comic Sans MS", 14));
 		recordHealthLabel.setStyle("-fx-font-weight: bold");
 		
@@ -372,7 +383,7 @@ public class createAccount {
 		
 
 		 
-		fillOutPane.getChildren().addAll(recordHealthLabel,number, label, immu,buttons1, healthIssLabel2, healthIss, buttons2, medLabel2, med, buttons3, deleteLabel, deletion, buttons4, errorMess2);
+		fillOutPane.getChildren().addAll(recordHealthLabel,number,pharmacy, label, immu,buttons1, healthIssLabel2, healthIss, buttons2, medLabel2, med, buttons3, deleteLabel, deletion, buttons4, errorMess2);
 	}
 	
 	private void buttonHandling() {
@@ -387,23 +398,54 @@ public class createAccount {
 		public void handle(ActionEvent e) {
 			Object source = e.getSource();
 			if (source == confirmAccountButton) {
-				if (passwordTF.getText().equals("") || reEnterTF.getText().equals("") || numberTF.getText().equals("")) {
-					System.out.println("empty");
-					errorMess1.setText("Invalid Password");
-				} else if (numberTF.getText().length()!=10) {
-					errorMess1.setText("Invalid phone number");
-				} else if (!phoneChecker(numberTF.getText())) {
-					errorMess1.setText("Invalid phone number");
-				}else if (passwordTF.getText().length()<8) {
-					errorMess1.setText("Too little characters");
-				} else if (!specialCharChecker(passwordTF.getText())) {
-					errorMess1.setText("No special characters");
-				} else if (!passwordTF.getText().equals(reEnterTF.getText())){
-					errorMess1.setText("Passwords do not match");
+				if (role.equals("Patient")) {
+					if (passwordTF.getText().equals("") || reEnterTF.getText().equals("") || numberTF.getText().equals("") || pharmTF.getText().equals("")) {
+						System.out.println("empty");
+						errorMess1.setText("Invalid Password");
+					} else if (numberTF.getText().length()!=10) {
+						errorMess1.setText("Invalid phone number");
+					} else if (!phoneChecker(numberTF.getText())) {
+						errorMess1.setText("Invalid phone number");
+					}else if (passwordTF.getText().length()<8) {
+						errorMess1.setText("Too little characters");
+					} else if (!specialCharChecker(passwordTF.getText())) {
+						errorMess1.setText("No special characters");
+					} else if (!passwordTF.getText().equals(reEnterTF.getText())){
+						errorMess1.setText("Passwords do not match");
+					} else {
+						System.out.println("You are a " + role);
+						userMaker();
+						
+						Login backToLogin = new Login();
+						Window newWindow = accountScene.getWindow();
+						if (newWindow instanceof Stage) {
+							Stage newStage = (Stage) newWindow;
+							newStage.setScene(backToLogin.getScene());
+						}
+					}
 				} else {
-					System.out.println("You are a " + role);
-					userMaker();
+					if (passwordTF.getText().equals("") || reEnterTF.getText().equals("")) {
+						System.out.println("empty");
+						errorMess1.setText("Invalid Password");
+					}else if (passwordTF.getText().length()<8) {
+						errorMess1.setText("Too little characters");
+					} else if (!specialCharChecker(passwordTF.getText())) {
+						errorMess1.setText("No special characters");
+					} else if (!passwordTF.getText().equals(reEnterTF.getText())){
+						errorMess1.setText("Passwords do not match");
+					} else {
+						System.out.println("You are a " + role);
+						userMaker();
+						
+						Login backToLogin = new Login();
+						Window newWindow = accountScene.getWindow();
+						if (newWindow instanceof Stage) {
+							Stage newStage = (Stage) newWindow;
+							newStage.setScene(backToLogin.getScene());
+						}
+					}
 				}
+		
 
 			} else if (source == logout) {
 				System.out.println("Logout pressed");
@@ -594,20 +636,35 @@ public class createAccount {
 	
 	private void userMaker() {
 		if(role.equals("Nurse") || role.equals("Doctor")) {
-			String dir = System.getProperty("user.dir") + "\\users\\healthcare professionals";
-			File location = new File(dir);
-			if(!location.exists()) {
-				location.mkdirs();
+			if (healthCareVeriTF.getText().equals(verificationCode)) {
+				String dir = System.getProperty("user.dir") + "\\users\\healthcare professionals";
+				File location = new File(dir);
+				if(!location.exists()) {
+					location.mkdirs();
+				}
+				File file = new File(dir + "\\" + username + ".txt");
+				File professionals = new File(dir + "\\"+ "Professionals" + ".txt");
+				try {
+					FileWriter fw = new FileWriter(file.getAbsoluteFile());
+					FileWriter all = new FileWriter(professionals.getAbsoluteFile(), true);
+		            BufferedWriter bw = new BufferedWriter(fw);
+		            if (role.equals("Nurse")) {
+		            	bw.write("Nurse"+ "\n"+ first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n" + dob);
+		            } else {
+		            	bw.write("Doctor"+ "\n"+ first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n" + dob);
+		            }
+		            
+		            bw.close();
+		            BufferedWriter bdub = new BufferedWriter(all);
+		            bdub.append(first + " " + last + " " + dob +"\n" + username+"\n");
+		            bdub.close();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+			} else {
+				errorMess1.setText("Wrong Verification Code");
 			}
-			File file = new File(dir + "\\" + username + ".txt");
-			try {
-				FileWriter fw = new FileWriter(file.getAbsoluteFile());
-	            BufferedWriter bw = new BufferedWriter(fw);
-	            bw.write(first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n" + dob);
-	            bw.close();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
+
 		} else if(role.equals("Patient")){
 			String dir = System.getProperty("user.dir") + "\\users\\Patient";
 			File location = new File(dir);
@@ -620,7 +677,7 @@ public class createAccount {
 				FileWriter fw = new FileWriter(file.getAbsoluteFile());
 				FileWriter all = new FileWriter(patients.getAbsoluteFile(), true);
 	            BufferedWriter bw = new BufferedWriter(fw);
-	            bw.write(first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n"+numberTF.getText()+"\n" + dob  + "\nimmunization\n" + immu + "\nhealth issues\n" + healthIss+ "\nmedication\n" + med);
+	            bw.write(first + " " + last + "\n" + username + "\n" + passwordTF.getText() + "\n"+numberTF.getText()+"\n" + dob +"\n"  + pharmTF.getText()+ "\nimmunization\n" + immu + "\nhealth issues\n" + healthIss+ "\nmedication\n" + med);
 	            bw.close();
 	            BufferedWriter bdub = new BufferedWriter(all);
 	            bdub.append(first + " " + last + " " + dob + "\n" + username + "\n");
