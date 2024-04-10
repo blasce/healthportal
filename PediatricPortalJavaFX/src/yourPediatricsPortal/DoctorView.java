@@ -308,7 +308,7 @@ public class DoctorView {
 	
 	private void prescribeAndSummary() {
 		bottomLeftPane = new VBox();
-		presLabel = new Label("Prescription and Patient Summary");
+		presLabel = new Label("Prescription and Patient Findings/Summaries");
 		addressTF = new TextField();
 		prescribeTA = new TextArea();
 		dateTF = new TextField();
@@ -354,6 +354,8 @@ public class DoctorView {
 		cancel2Button = new Button("Cancel");
 		buttons2.setSpacing(10);
 		buttons2.getChildren().addAll(sumButton,cancel2Button, errMess2);
+		
+		summTA.setPromptText("Place physical findings and visit summary");
 		
 		bottomLeftPane.setSpacing(10);
 		bottomLeftPane.getChildren().addAll(presLabel,addressTF,  prescribeTA, buttons,dateTF, summTA, buttons2);
@@ -573,16 +575,24 @@ public class DoctorView {
 					healthInfoLabel.setTextFill(Color.RED);
 				}
 			} else if (source == alleButton || source == healthConcButton) {
-				try {
-					if (source == alleButton) {
-						System.out.println("Help");
-						vitalsGetter(alleButton);
-					} else {
-						vitalsGetter(healthConcButton);
+				if (patientSelect.getValue()==null) {
+					errMess1.setText("Select a patient, and click choose patient");
+					errMess1.setTextFill(Color.RED);
+					errMess2.setText("Select a patient, and click choose patient");
+					errMess2.setTextFill(Color.RED);
+				} else {
+					try {
+						if (source == alleButton) {
+							System.out.println("Help");
+							vitalsGetter(alleButton);
+						} else {
+							vitalsGetter(healthConcButton);
+						}
+					}catch (FileNotFoundException e2) {
+						System.out.println("ERROR");
 					}
-				}catch (FileNotFoundException e2) {
-					System.out.println("ERROR");
 				}
+				
 			} else if (source == chooseTextButton) {
 				try {
 					if (messageSelect.getValue()!= null) {
@@ -610,7 +620,13 @@ public class DoctorView {
 			} else if (source == presButton) {
 				if (prescribeTA.getText().equals("") || datePresTF.getText().equals("")) {
 					errMess1.setText("Empty Input");
-				} else {
+
+					errMess1.setTextFill(Color.RED);
+				} else if (patientSelect.getValue()==null) {
+					errMess1.setText("Pick a patient!");
+					errMess1.setTextFill(Color.RED);
+				}
+				else {
 					prescribing();
 					errMess1.setText("");
 					datePresTF.setText("");
@@ -619,19 +635,27 @@ public class DoctorView {
 				
 			} else if (source == sumButton) {
 				if (dateTF.getText().equals("") || summTA.getText().equals("")) {
-					errMess2.setText("Emtpy Input");
-				} else {
+					errMess2.setText("Empty Input");
+					errMess2.setTextFill(Color.RED);
+				} else if (patientSelect.getValue()==null) {
+					errMess2.setText("Pick a patient!");
+					errMess2.setTextFill(Color.RED);
+				}
+				else {
 					visitSumm();
 					dateTF.setText("");
 					summTA.setText("");
 					errMess2.setText("");
+					errMess2.setTextFill(Color.RED);
 				}
 			} else if (source == cancelButton) {
 				datePresTF.setText("");
 				prescribeTA.setText("");
+				errMess1.setText("");
 			} else if (source == cancel2Button) {
 				dateTF.setText("");
 				summTA.setText("");
+				errMess2.setText("");
 			}
 			else {
 				try {

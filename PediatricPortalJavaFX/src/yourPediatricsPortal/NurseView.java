@@ -34,6 +34,11 @@ public class NurseView {
 	private Label weightLabel, tempLabel, heightLabel, bloodLabel, allergyLabel, healthConLabel, usernameLabel;
 	private TextField patientWeight, patientHeight, patientTemp, patientBlood;
 	private Label userLabel;
+	private Label errMessLabel;
+	private Label ageLabel;
+	private Button ageSubmit;
+	
+	private ComboBox<Integer> ageCB;
 	private TextArea patientContactInfoText, textingTA, texts;
 	private Button healthIssButton, medButton, immuButton, submitButton, cancelButton,  logoutButton, choosePatientButton;
 	private Button chooseTextButton, messageButton;
@@ -98,14 +103,24 @@ public class NurseView {
 		vitalPanes = new GridPane();
 		currentPatientPane = new HBox();
 		topLeftPane = new HBox();
+		ageLabel = new Label("Age: ");
+		ageCB = new ComboBox<Integer>();
 		
+		for (int i =0 ; i<18 ; i++) {
+			ageCB.getItems().add(i);
+		}
 		
 		vitalLabel = new Label("Vitals:");
+		
+		HBox vitalAge = new HBox();
+		vitalAge.getChildren().addAll(vitalLabel, ageLabel, ageCB);
+		
 		healthInfoLabel = new Label("Health Info:");
 		vitalLabel.setPadding(new Insets(-10,0,0,0));
 		leftPane.setSpacing(20);
 		
-	
+		ageLabel.setFont(new Font("Comic Sans MS", 12));
+		ageLabel.setStyle("-fx-font-weight: bold");
 		vitalLabel.setFont(new Font("Comic Sans MS", 13));
 		vitalLabel.setStyle("-fx-font-weight: bold");
 		patientSelect();
@@ -114,7 +129,7 @@ public class NurseView {
 		vitalFormButtons();
 		
 		leftPane.setPadding(new Insets(0,0,0,20));
-		leftPane.getChildren().addAll(patientSelPane, topLeftPane,vitalLabel,vitalPanes, allergyLabel, allergyTA, healthConLabel, healthConcernTA, bottomPane);
+		leftPane.getChildren().addAll(patientSelPane, topLeftPane,vitalAge,vitalPanes, allergyLabel, allergyTA, healthConLabel, healthConcernTA, bottomPane);
 		
 	}
 	
@@ -294,9 +309,13 @@ public class NurseView {
 		bottomPane = new HBox();
 		submitButton = new Button("Submit Form");
 		cancelButton = new Button("Cancel");
+		errMessLabel = new Label("");
+		errMessLabel.setFont(new Font("Comic Sans MS", 13));
+		errMessLabel.setStyle("-fx-font-weight: bold");
 		
+		bottomPane.setSpacing(10);
 		submitButton.setOnAction(null);
-		bottomPane.getChildren().addAll(submitButton, cancelButton);
+		bottomPane.getChildren().addAll(submitButton, cancelButton, errMessLabel);
 		
 	}
 	
@@ -498,7 +517,21 @@ public class NurseView {
 				}
 			}
 			else if(source == submitButton) {
-				collectData();
+				if (patientWeight.equals("")||patientBlood.equals("")|| patientTemp.equals("") ||patientHeight.equals("")||allergyTA.equals("")||healthConcernTA.equals("")) {
+					errMessLabel.setText("Empty boxes, if not relevant type 'None'");
+					errMessLabel.setTextFill(Color.RED);
+				} else if (patientSelect.getValue()==null) {
+					errMessLabel.setText("Select a patient, and click Choose Patient");
+					errMessLabel.setTextFill(Color.RED);
+				}
+				else if (ageCB.getValue()<12) {
+					errMessLabel.setText("Patient is not under 12, no vitals needed");
+					errMessLabel.setTextFill(Color.RED);
+				}
+				else {
+					errMessLabel.setText("");
+					collectData();
+				}
 			}
 			else if (source == choosePatientButton) {
 				System.out.println("choose patient pressed");
@@ -538,6 +571,7 @@ public class NurseView {
 				patientBlood.setText("");
 				allergyTA.setText("");
 				healthConcernTA.setText("");
+				errMessLabel.setText("");
 			}
 			else {
 				try {
