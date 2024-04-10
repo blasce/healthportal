@@ -656,7 +656,7 @@ public class createAccount {
 		            
 		            bw.close();
 		            BufferedWriter bdub = new BufferedWriter(all);
-		            bdub.append(first + " " + last + " " + dob +"\n" + username+"\n");
+		            bdub.append(role + " " +first + " " + last + " " + dob +"\n" + username+"\n");
 		            bdub.close();
 		        } catch (IOException e) {
 		            e.printStackTrace();

@@ -197,6 +197,7 @@ public class DoctorView {
 			count +=1;
 		}
 	}
+	
 	private void vitalPaneFormatting() {
 		weightLabel = new Label("Weight (lbs):	");
 		tempLabel = new Label("Temp (F):	");
@@ -412,6 +413,30 @@ public class DoctorView {
 	}
 	
 	
+	private void professionalListing() throws FileNotFoundException{
+		String dir = System.getProperty("user.dir") + "\\users\\healthcare professionals\\Professionals.txt";
+		File prof = new File(dir);
+		Scanner scnr = new Scanner(prof);
+		int count = 0;
+		String temp = "";
+		System.out.println("something");
+		while(scnr.hasNextLine()) {
+			if (count%2 == 0) {
+				temp = scnr.nextLine();
+				System.out.println(temp);
+				messageSelect.getItems().add(temp);
+			} else {
+				String temp1 = scnr.nextLine();
+				if (temp1.equals(usernameString)) {
+					System.out.println(temp1);
+					messageSelect.getItems().remove(temp);
+				}
+			}
+			count +=1;
+		}
+		scnr.close();
+	}
+	
 	private void messageSystem() {
 		messagePane = new BorderPane();
 		usersScroll = new ScrollPane();
@@ -436,6 +461,7 @@ public class DoctorView {
 		//messageSelect.set
 		try {
 			patientListing(messageSelect);
+			professionalListing();
 		} catch(FileNotFoundException e) {
 			System.out.println("ERROR");
 		}
