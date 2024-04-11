@@ -722,7 +722,7 @@ public class DoctorView {
 		String dob = information.substring(information.lastIndexOf(" ") + 1);
 		String username =  firstName.substring(0,1) + LastName+dob.substring(0,2) + dob.substring(3,5)+dob.substring(8,10);
 		
-		String data = dateTF.getText() + "\n" +summTA.getText();
+		String data = dateTF.getText() + "\n" +summTA.getText()+"\n";
 		String dir = System.getProperty("user.dir") + "\\users\\Patient";
 		File file = new File(dir + "\\" + username + "_"+"Findings_Summary"+".txt");
 		

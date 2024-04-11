@@ -529,6 +529,8 @@ public class NurseView {
 					errMessLabel.setTextFill(Color.RED);
 				}
 				else {
+					allergyTA.setText("");
+					healthConcernTA.setText("");
 					errMessLabel.setText("");
 					collectData();
 				}

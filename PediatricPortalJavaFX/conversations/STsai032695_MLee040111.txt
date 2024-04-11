@@ -1,0 +1,5 @@
+Patient: Hello, I am unsure if Michelle's allergies to pollen will worsen her lungs?
+Doctor STs: No, I just checked her, she's doing great!
+Doctor STs: Hey How is she feeling?
+Doctor STs: How are you today?
+Doctor STs: Hello, any word from Michelle?
