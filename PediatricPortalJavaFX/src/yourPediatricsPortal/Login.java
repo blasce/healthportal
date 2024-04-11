@@ -286,11 +286,11 @@ public class Login{
 			//find the right folder
 			String dir = "";
 			if (roleSelectCB.getValue().equals("Patient")) {
-				dir= System.getProperty("user.dir") + "\\users\\Patient\\"+ usernameTF.getText() + ".txt";
+				dir= "./users/Patient/"+ usernameTF.getText() + ".txt";
 				System.out.println(dir);
 			}
 			else if (roleSelectCB.getValue().equals("Nurse") || roleSelectCB.getValue().equals("Doctor")) {
-				dir = System.getProperty("user.dir") + "\\users\\healthcare professionals\\"+ usernameTF.getText() + ".txt";
+				dir = "./users/healthcare professionals/"+ usernameTF.getText() + ".txt";
 				System.out.println(dir);
 			}
 
@@ -326,7 +326,6 @@ public class Login{
 								System.out.println(line);
 								if (!line.equals(roleSelectCB.getValue())) {
 									reader.close();
-									System.out.println("urmom");
 									return false;
 								}
 							}

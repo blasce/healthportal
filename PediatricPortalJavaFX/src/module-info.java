@@ -3,5 +3,5 @@ module PediatricPortalJavaFX {
 	
 	opens application to javafx.graphics, javafx.fxml;
 	
-	exports yourPediatricsPortal to javafx.graphics;
+	exports yourPediatricsPortal to javafx.graphics, javafx.fxml ;
 }

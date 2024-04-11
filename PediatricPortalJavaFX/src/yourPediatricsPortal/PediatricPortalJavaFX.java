@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 import javafx.stage.Window;
 
+
 public class PediatricPortalJavaFX extends Application {
 
 	@Override
